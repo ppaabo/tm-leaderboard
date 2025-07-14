@@ -1,25 +1,36 @@
 services:
   backend:
     build:
-      context: ./backend
+      context: ./api
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - mongodb
     develop:
       watch:
         - action: sync
-          path: ./backend/src
+          path: ./api/src
           target: /app/src
   frontend:
     build:
-      context: ./frontend
+      context: ./web
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
     develop:
       watch:
         - action: sync
-          path: ./frontend/src
+          path: ./web/src
           target: /app/src
         - action: rebuild
-          path: ./frontend/package.json
+          path: ./web/package.json
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
