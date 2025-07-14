@@ -1,5 +1,5 @@
 import express from "express";
-import { connectDB } from "./database.js";
+import { connectDB } from "./db/connectDB.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -17,9 +17,5 @@ const PORT = process.env.PORT || 8080;
 })();
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/api/test", (req, res) => {
   res.json({ foo: "bar" });
 });
