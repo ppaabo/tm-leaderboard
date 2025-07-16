@@ -16,11 +16,12 @@ const userSchema: Schema<IUser> = new Schema({
     type: String,
     required: false,
   },
-  scores: {
-    type: [mongoose.Types.ObjectId],
-    ref: "Score",
-    default: [],
-  },
+  scores: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Score",
+    },
+  ],
 });
 
 const User = mongoose.model<IUser>("User", userSchema);
