@@ -9,6 +9,4 @@ router.post("/", userController.createUser);
 router.get("/:id", userController.getUserProfile);
 router.delete("/:id", userController.deleteUser);
 
-router.get("/:id/scores", userController.getUserScores);
-
 export default router;

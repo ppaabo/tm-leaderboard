@@ -15,8 +15,9 @@ class UserController {
   async getUserProfile(req: Request, res: Response) {
     const userId = req.params.id;
     try {
-      //const user = await User.findById(userId).populate("scores");
-      const user = await User.findById(userId);
+      const user = await User.findById(userId)
+        .select({ email: 0 })
+        .populate("scores");
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -30,16 +31,11 @@ class UserController {
 
   async getAllUsers(req: Request, res: Response) {
     try {
-      //const users = await User.find().populate("scores");
-      const users = await User.find();
+      const users = await User.find().select({ email: 0 }).populate("scores");
       res.json(users);
     } catch (err) {
       res.status(500).json({ message: "Error fetching users", error: err });
     }
-  }
-
-  async getUserScores(req: Request, res: Response) {
-    res.status(404).json({ message: "Not implemented" });
   }
 
   async deleteUser(req: Request, res: Response) {
