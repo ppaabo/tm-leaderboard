@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { connectDB } from "./db/connectDB.js";
 import userRoutes from "./routes/userRoutes.js";
 import scoreRoutes from "./routes/scoreRoutes.js";
@@ -10,6 +10,10 @@ app.use(express.json());
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/scores", scoreRoutes);
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const response = { status: "error", message: err.message };
+  res.status(err.status || 500).json(response);
+});
 
 (async () => {
   try {

@@ -1,14 +1,19 @@
 import { Request, Response } from "express";
 import User from "../models/user.js";
+import { ApiError } from "../utils/apiError.js";
 
 class UserController {
   async createUser(req: Request, res: Response) {
     try {
       const { username, email = undefined } = req.body;
       const newUser = await User.create({ username, email });
-      res.status(201).json(newUser);
-    } catch (error) {
-      res.status(500).json({ message: "Error creating user", error });
+      const response = { status: "success", data: newUser };
+      res.status(201).json(response);
+    } catch (err: any) {
+      if (err.code === 11000) {
+        throw new ApiError("Username already exists", 409);
+      }
+      throw new ApiError("Error creating user", 500);
     }
   }
 
@@ -19,27 +24,27 @@ class UserController {
         .select({ email: 0 })
         .populate("scores");
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        throw new ApiError("User not found", 404);
       }
-      res.json(user);
+      const response = { status: "success", data: user };
+      res.json(response);
     } catch (err) {
-      res
-        .status(500)
-        .json({ message: "Error fetching user profile", error: err });
+      throw new ApiError("Error fetching user profile", 500);
     }
   }
 
   async getAllUsers(req: Request, res: Response) {
     try {
       const users = await User.find().select({ email: 0 }).populate("scores");
-      res.json(users);
+      const response = { status: "success", data: users };
+      res.json(response);
     } catch (err) {
-      res.status(500).json({ message: "Error fetching users", error: err });
+      throw new ApiError("Error fetching users", 500);
     }
   }
 
   async deleteUser(req: Request, res: Response) {
-    res.status(404).json({ message: "Not implemented" });
+    throw new ApiError("Not implemented", 404);
   }
 }
 
