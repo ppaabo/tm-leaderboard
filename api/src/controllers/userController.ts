@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/user.js";
-import { ApiError } from "../utils/apiError.js";
+import { ApiError, BadRequestError } from "../utils/apiErrors.js";
+import { userWithIdExists } from "../utils/userUtils.js";
 
 class UserController {
   async createUser(req: Request, res: Response) {
@@ -9,38 +10,32 @@ class UserController {
       const newUser = await User.create({ username, email });
       const response = { status: "success", data: newUser };
       res.status(201).json(response);
-    } catch (err: any) {
-      if (err.code === 11000) {
-        throw new ApiError("Username already exists", 409);
+    } catch (err: unknown) {
+      if (err instanceof Error && (err as any).code === 11000) {
+        throw new BadRequestError("Username already exists", err as Error);
       }
-      throw new ApiError("Error creating user", 500);
+      throw new ApiError(
+        "Error creating user",
+        500,
+        err instanceof Error ? err : undefined
+      );
     }
   }
 
   async getUserProfile(req: Request, res: Response) {
     const userId = req.params.id;
-    try {
-      const user = await User.findById(userId)
-        .select({ email: 0 })
-        .populate("scores");
-      if (!user) {
-        throw new ApiError("User not found", 404);
-      }
-      const response = { status: "success", data: user };
-      res.json(response);
-    } catch (err) {
-      throw new ApiError("Error fetching user profile", 500);
-    }
+    await userWithIdExists(userId);
+    const user = await User.findById(userId)
+      .select({ email: 0 })
+      .populate("scores");
+    const response = { status: "success", data: user };
+    res.json(response);
   }
 
   async getAllUsers(req: Request, res: Response) {
-    try {
-      const users = await User.find().select({ email: 0 }).populate("scores");
-      const response = { status: "success", data: users };
-      res.json(response);
-    } catch (err) {
-      throw new ApiError("Error fetching users", 500);
-    }
+    const users = await User.find().select({ email: 0 }).populate("scores");
+    const response = { status: "success", data: users };
+    res.json(response);
   }
 
   async deleteUser(req: Request, res: Response) {
