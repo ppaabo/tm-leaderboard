@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IScore extends Document {
-  userId: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
   gameMode: string;
   map: string;
   score: number;
@@ -9,7 +9,7 @@ interface IScore extends Document {
 }
 
 const scoreSchema: Schema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   gameMode: { type: String, required: true },
   map: { type: String, required: true },
   score: { type: Number, required: true },

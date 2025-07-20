@@ -35,7 +35,3 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     process.exit(1);
   }
 })();
-
-app.get("/", (req, res) => {
-  res.json({ foo: "bar" });
-});

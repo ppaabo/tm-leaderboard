@@ -25,15 +25,15 @@ class UserController {
   async getUserProfile(req: Request, res: Response) {
     const userId = req.params.id;
     await userWithIdExists(userId);
-    const user = await User.findById(userId)
-      .select({ email: 0 })
-      .populate("scores");
+    // const user = await User.findById(userId).select({ email: 0 });
+    const user = await User.findById(userId);
     const response = { status: "success", data: user };
     res.json(response);
   }
 
   async getAllUsers(req: Request, res: Response) {
-    const users = await User.find().select({ email: 0 }).populate("scores");
+    // const users = await User.find().select({ email: 0 });
+    const users = await User.find();
     const response = { status: "success", data: users };
     res.json(response);
   }

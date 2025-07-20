@@ -5,28 +5,23 @@ import { userWithIdExists } from "../utils/userUtils.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
-    const { userId, gameMode, map, score, timestamp = undefined } = req.body;
-    await userWithIdExists(userId);
+    const { user, gameMode, map, score, timestamp = undefined } = req.body;
+    await userWithIdExists(user);
     const newScore = await Score.create({
-      userId,
+      user,
       gameMode,
       map,
       score,
       timestamp,
     });
-    console.log("Score added");
-    // Update user's scores array
-    await User.findByIdAndUpdate(newScore.userId, {
-      $push: { scores: newScore._id },
-    });
+    console.log("Score added: ", newScore);
     const response = { status: "success", data: newScore };
     res.json(response);
   }
 
   async getAllScores(req: Request, res: Response) {
-    const scores = await Score.find();
-    const response = { status: "success", data: scores };
-    res.json(response);
+    const scores = await Score.find().populate("user", "username");
+    res.json({ status: "success", data: scores });
   }
 
   async getLeaderboard(req: Request, res: Response) {
