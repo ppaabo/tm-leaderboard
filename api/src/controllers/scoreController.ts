@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Score from "../models/score.js";
-import User from "../models/user.js";
 import { userWithIdExists } from "../utils/userUtils.js";
 
 class ScoreController {

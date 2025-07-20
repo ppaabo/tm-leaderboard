@@ -39,7 +39,10 @@ class UserController {
   }
 
   async deleteUser(req: Request, res: Response) {
-    throw new ApiError("Not implemented", 404);
+    const userId = req.params.id;
+    await userWithIdExists(userId);
+    await User.deleteOne({ _id: userId });
+    res.status(204).end();
   }
 }
 

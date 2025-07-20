@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import Score from "./score.js";
 
 interface IUser extends Document {
   username: string;
@@ -16,6 +17,16 @@ const userSchema: Schema<IUser> = new Schema({
     required: false,
   },
 });
+// Delete user scores
+userSchema.pre(
+  "deleteOne",
+  { query: true, document: false },
+  async function (next) {
+    const userId = this.getFilter()._id;
+    await Score.deleteMany({ user: userId });
+    next();
+  }
+);
 
 const User = mongoose.model<IUser>("User", userSchema);
 
