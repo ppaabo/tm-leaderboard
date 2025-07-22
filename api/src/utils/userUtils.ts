@@ -11,3 +11,18 @@ export const userWithIdExists = async (userId: string): Promise<boolean> => {
   }
   return true;
 };
+
+export const validateUserRegistration = async (
+  username: string,
+  email: string
+) => {
+  const existingUserByUsername = await User.findOne({ username });
+  if (existingUserByUsername) {
+    throw new BadRequestError("Username is already in use");
+  }
+  const existingUserByEmail = await User.findOne({ email });
+  if (existingUserByEmail) {
+    throw new BadRequestError("Email is already in use");
+  }
+  return true;
+};

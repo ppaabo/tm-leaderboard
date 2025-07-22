@@ -1,16 +1,23 @@
 import { Request, Response } from "express";
 import User from "../models/user.js";
 import { ApiError, BadRequestError } from "../utils/apiErrors.js";
-import { userWithIdExists } from "../utils/userUtils.js";
+import {
+  userWithIdExists,
+  validateUserRegistration,
+} from "../utils/userUtils.js";
 
 class UserController {
   async createUser(req: Request, res: Response) {
     try {
-      const { username, email = undefined } = req.body;
+      const { username, email } = req.body;
+      await validateUserRegistration(username, email);
       const newUser = await User.create({ username, email });
       const response = { status: "success", data: newUser };
       res.status(201).json(response);
     } catch (err: unknown) {
+      if (err instanceof BadRequestError) {
+        throw err;
+      }
       if (err instanceof Error && (err as any).code === 11000) {
         throw new BadRequestError("Username already exists", err as Error);
       }
