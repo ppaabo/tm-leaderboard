@@ -12,14 +12,10 @@ class UserController {
       const { username, email } = req.body;
       await validateUserRegistration(username, email);
       const newUser = await User.create({ username, email });
-      const response = { status: "success", data: newUser };
-      res.status(201).json(response);
+      res.status(201).json({ status: "success", data: newUser });
     } catch (err: unknown) {
       if (err instanceof BadRequestError) {
         throw err;
-      }
-      if (err instanceof Error && (err as any).code === 11000) {
-        throw new BadRequestError("Username already exists", err as Error);
       }
       throw new ApiError(
         "Error creating user",
@@ -34,15 +30,13 @@ class UserController {
     await userWithIdExists(userId);
     // const user = await User.findById(userId).select({ email: 0 });
     const user = await User.findById(userId);
-    const response = { status: "success", data: user };
-    res.json(response);
+    res.json({ status: "success", data: user });
   }
 
   async getAllUsers(req: Request, res: Response) {
     // const users = await User.find().select({ email: 0 });
     const users = await User.find();
-    const response = { status: "success", data: users };
-    res.json(response);
+    res.json({ status: "success", data: users });
   }
 
   async deleteUser(req: Request, res: Response) {

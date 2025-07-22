@@ -4,18 +4,17 @@ import { userWithIdExists } from "../utils/userUtils.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
-    const { user, gameMode, map, score, timestamp = undefined } = req.body;
+    const { user, gamemode, map, score, timestamp = undefined } = req.body;
     await userWithIdExists(user);
     const newScore = await Score.create({
       user,
-      gameMode,
+      gamemode,
       map,
       score,
       timestamp,
     });
     console.log("Score added: ", newScore);
-    const response = { status: "success", data: newScore };
-    res.json(response);
+    res.json({ status: "success", data: newScore });
   }
 
   async getAllScores(req: Request, res: Response) {
@@ -24,10 +23,17 @@ class ScoreController {
   }
 
   async getLeaderboard(req: Request, res: Response) {
-    console.log(
-      `getLeaderboard for gamemode: '${req.params.gamemode}', map: '${req.params.map}'`
-    );
-    res.status(404).json({ message: "Not Implemented" });
+    const gamemode = req.params.gamemode;
+    const map = req.params.map;
+    const leaderboard = await Score.find({
+      gamemode,
+      map,
+    }).populate("user", "username");
+    res.json({ status: "success", data: leaderboard });
+    // const leaderboard = await Score.find({
+    //   gamemode: new RegExp(`^${gamemode}$`, "i"),
+    //   map: new RegExp(`^${map}$`, "i"),
+    // }).populate("user", "username");
   }
 }
 

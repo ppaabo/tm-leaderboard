@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface IScore extends Document {
   user: mongoose.Types.ObjectId;
-  gameMode: string;
+  gamemode: string;
   map: string;
   score: number;
   timestamp?: Date;
@@ -10,10 +10,16 @@ interface IScore extends Document {
 
 const scoreSchema: Schema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  gameMode: { type: String, required: true },
+  gamemode: { type: String, required: true },
   map: { type: String, required: true },
   score: { type: Number, required: true },
   timestamp: { type: Date, default: Date.now },
+});
+
+scoreSchema.pre<IScore>("save", function (next) {
+  if (this.gamemode) this.gamemode = this.gamemode.toLowerCase();
+  if (this.map) this.map = this.map.toLowerCase();
+  next();
 });
 
 const Score = mongoose.model<IScore>("Score", scoreSchema);

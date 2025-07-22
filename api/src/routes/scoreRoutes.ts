@@ -7,7 +7,7 @@ const router = Router();
 router.get("/", scoreController.getAllScores);
 router.post(
   "/",
-  validateBody(["user", "gameMode", "map", "score"]),
+  validateBody(["user", "gamemode", "map", "score"]),
   scoreController.addScore
 );
 
