@@ -10,15 +10,28 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div>
-    <h2 v-if="title">{{ title }}</h2>
-    <ul>
-      <li v-for="item in items" :key="item.id">
-        <button @click="$emit('select', item)">
-          {{ item.name }}
-        </button>
-      </li>
-    </ul>
+  <h2 v-if="title">{{ title }}</h2>
+  <div class="button-container">
+    <button
+      v-for="item in items"
+      :key="item.id"
+      class="outline category-btn"
+      @click="$emit('select', item)"
+    >
+      {{ item.name }}
+    </button>
   </div>
 </template>
-<style scoped></style>
+<style scoped>
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.category-btn {
+  width: auto;
+  min-width: 200px;
+  margin-bottom: 0.5rem;
+}
+</style>
