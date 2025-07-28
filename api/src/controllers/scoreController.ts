@@ -25,11 +25,12 @@ class ScoreController {
   async getLeaderboard(req: Request, res: Response) {
     const gamemode = req.params.gamemode;
     const map = req.params.map;
+    const sortDirection = gamemode === "time-trial" ? "score" : "-score";
     const leaderboard = await Score.find({
       gamemode,
       map,
     })
-      .sort("-score")
+      .sort(sortDirection)
       .populate("user", "username");
 
     res.json({ status: "success", data: leaderboard });
