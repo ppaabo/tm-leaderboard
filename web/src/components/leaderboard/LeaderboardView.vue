@@ -1,27 +1,31 @@
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/categoryStore";
 import { computed, onMounted, ref } from "vue";
-interface LeaderboardUser {
-  _id: string;
-  username: string;
-}
-interface LeaderboardEntry {
-  _id: string;
-  user: LeaderboardUser;
-  gamemode: string;
-  map: string;
-  score: number;
-  timestamp: string;
-}
+import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
+import { formatTimeTrialScore } from "@/utils/timeFormat";
+
 const props = defineProps<{ gamemode: string; map: string }>();
-const leaderboard = ref<LeaderboardEntry[]>([]);
+const leaderboard = ref<LeaderboardEntryDisplay[]>([]);
 const store = useCategoryStore();
 
 onMounted(async () => {
   store.fetchCategories();
   const response = await fetch(`/api/scores/${props.gamemode}/${props.map}`);
   if (response.ok) {
-    leaderboard.value = (await response.json()).data;
+    const data: LeaderboardEntryData[] = (await response.json()).data;
+    if (props.gamemode === "time-trial") {
+      leaderboard.value = data.map((entry) => ({
+        ...entry,
+        rawScore: entry.score,
+        score: formatTimeTrialScore(entry.score),
+      }));
+    } else {
+      leaderboard.value = data.map((entry) => ({
+        ...entry,
+        rawScore: entry.score,
+        score: entry.score.toLocaleString("en-US"),
+      }));
+    }
   }
 });
 
