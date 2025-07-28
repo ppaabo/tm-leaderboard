@@ -28,7 +28,10 @@ class ScoreController {
     const leaderboard = await Score.find({
       gamemode,
       map,
-    }).populate("user", "username");
+    })
+      .sort("-score")
+      .populate("user", "username");
+
     res.json({ status: "success", data: leaderboard });
     // const leaderboard = await Score.find({
     //   gamemode: new RegExp(`^${gamemode}$`, "i"),
