@@ -1,14 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import NavBar from "./components/NavBar.vue";
+</script>
 
 <template>
   <header>
-    <h4>Header</h4>
+    <NavBar />
   </header>
   <main>
     <router-view />
   </main>
   <footer>
-    <h4>Footer</h4>
+    <small>Footer</small>
   </footer>
 </template>
 

@@ -1,8 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-  <h1>Leaderboard</h1>
+  <h1>Home page</h1>
   <router-link :to="{ name: 'gamemodes' }">
-    <button>View Leaderboards</button>
+    <button>View leaderboards</button>
   </router-link>
 </template>
