@@ -35,7 +35,7 @@ const mapObj = computed(() => store.getMapById(props.map));
 <template>
   <p><b>Gamemode: </b>{{ gamemodeObj?.name || props.gamemode }}</p>
   <p><b>Map: </b>{{ mapObj?.name || props.map }}</p>
-  <table>
+  <table class="striped">
     <thead>
       <tr>
         <th>Username</th>
