@@ -1,7 +1,7 @@
 import { Router } from "express";
-import authController from "../controllers/authController.js";
+import authController from "../controllers/auth-controller.js";
 import passport from "passport";
-import { validateBody } from "../middleware/validateBody.js";
+import { validateBody } from "../middleware/validate-body.js";
 
 const router = Router();
 router.post(

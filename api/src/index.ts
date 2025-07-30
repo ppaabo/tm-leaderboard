@@ -4,12 +4,12 @@ import passport from "passport";
 import cors from "cors";
 
 import initPassport from "./auth/passport-config.js";
-import { connectDB } from "./db/connectDB.js";
-import userRoutes from "./routes/userRoutes.js";
-import scoreRoutes from "./routes/scoreRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import authRoutes from "./routes/auth.js";
-import { ApiError } from "./utils/apiErrors.js";
+import { connectDB } from "./db/connect-db.js";
+import userRoutes from "./routes/user-routes.js";
+import scoreRoutes from "./routes/score-routes.js";
+import categoryRoutes from "./routes/category-routes.js";
+import authRoutes from "./routes/auth-routes.js";
+import { ApiError } from "./utils/api-errors.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;

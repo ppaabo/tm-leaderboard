@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useCategoryStore } from "@/stores/categoryStore";
+import { useCategoryStore } from "@/stores/category-store";
 import { computed, onMounted, ref } from "vue";
 import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
-import { formatTimeTrialScore } from "@/utils/timeFormat";
+import { formatTimeTrialScore } from "@/utils/score-format";
 
 const props = defineProps<{ gamemode: string; map: string }>();
 const leaderboard = ref<LeaderboardEntryDisplay[]>([]);

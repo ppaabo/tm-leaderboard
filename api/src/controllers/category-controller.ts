@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Gamemode, Map } from "../models/categories.js";
+import { Gamemode, Map } from "../models/score-metadata.js";
 
 class CategoryController {
   async getAllCategories(req: Request, res: Response) {

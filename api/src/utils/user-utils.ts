@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/user.js";
-import { NotFoundError, BadRequestError } from "./apiErrors.js";
+import { NotFoundError, BadRequestError } from "./api-errors.js";
 export const userWithIdExists = async (userId: string) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new BadRequestError("Invalid user ID format");

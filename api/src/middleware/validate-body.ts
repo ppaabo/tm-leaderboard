@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError } from "../utils/apiErrors.js";
+import { BadRequestError } from "../utils/api-errors.js";
 
 // Check if request body exists
 function requireBody(req: Request, res: Response, next: NextFunction) {

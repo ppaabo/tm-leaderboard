@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCategoryStore } from "@/stores/categoryStore";
+import { useCategoryStore } from "@/stores/category-store";
 import { onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import CategoryList from "@/components/leaderboard/CategoryList.vue";
