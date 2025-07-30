@@ -4,6 +4,7 @@ import Score from "./score.js";
 interface IUser extends Document {
   username: string;
   email?: string;
+  password: string;
 }
 
 const userSchema: Schema<IUser> = new Schema({
@@ -14,7 +15,12 @@ const userSchema: Schema<IUser> = new Schema({
   },
   email: {
     type: String,
-    required: false,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
   },
 });
 // Delete user scores
