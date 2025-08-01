@@ -1,9 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-
-export interface IGamemode extends Document {
-  id: string;
-  name: string;
-}
+import type { IGamemode, IMap } from "../types/score.js";
 
 const gamemodeSchema = new Schema<IGamemode>({
   id: { type: String, required: true, unique: true },
@@ -11,11 +7,6 @@ const gamemodeSchema = new Schema<IGamemode>({
 });
 
 export const Gamemode = mongoose.model<IGamemode>("Gamemode", gamemodeSchema);
-
-export interface IMap extends Document {
-  id: string;
-  name: string;
-}
 
 const mapSchema = new Schema<IMap>({
   id: { type: String, required: true, unique: true },

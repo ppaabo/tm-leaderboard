@@ -1,12 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-
-interface IScore extends Document {
-  user: mongoose.Types.ObjectId;
-  gamemode: string;
-  map: string;
-  score: number;
-  timestamp?: Date;
-}
+import type { IScore } from "../types/index.js";
 
 const scoreSchema: Schema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
