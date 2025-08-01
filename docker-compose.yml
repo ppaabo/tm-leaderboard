@@ -1,5 +1,6 @@
 services:
-  backend:
+  api:
+    container_name: leaderboard-api
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -7,15 +8,19 @@ services:
       - "8080:8080"
     depends_on:
       - mongodb
+    env_file:
+      - ./api/.env
     develop:
       watch:
         - action: sync
           path: ./api/src
           target: /app/src
-  frontend:
+  client:
+    container_name: leaderboard-client
     build:
       context: ./web
       dockerfile: Dockerfile
+
     ports:
       - "5173:5173"
     develop:
@@ -26,6 +31,7 @@ services:
         - action: rebuild
           path: ./web/package.json
   mongodb:
+    container_name: leaderboard-db
     image: mongo:7
     ports:
       - "27017:27017"
