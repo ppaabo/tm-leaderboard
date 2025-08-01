@@ -15,14 +15,15 @@ services:
         - action: sync
           path: ./api/src
           target: /app/src
-  client:
+  web:
     container_name: leaderboard-client
     build:
       context: ./web
       dockerfile: Dockerfile
-
     ports:
       - "5173:5173"
+    env_file:
+      - ./web/.env
     develop:
       watch:
         - action: sync
