@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import { ApiError, BadRequestError } from "../utils/api-errors.js";
 import { validateUserRegistration } from "../utils/user-utils.js";
 import bcrypt from "bcrypt";
+import type { LoginResponsePayload, IUser } from "../types/index.js";
 
 class AuthController {
   async createUser(req: Request, res: Response) {
@@ -26,7 +27,16 @@ class AuthController {
   }
 
   loginUser(req: Request, res: Response) {
-    res.json({ status: "success", message: "Logged in" });
+    const user = req.user as IUser;
+    if (!user) {
+      return res.status(401).json({ status: "error", message: "Unauthorized" });
+    }
+    const response: LoginResponsePayload = {
+      id: user._id?.toString(),
+      username: user.username,
+      accountType: user.accountType,
+    };
+    res.json({ status: "success", data: response });
   }
 
   logoutUser(req: Request, res: Response) {

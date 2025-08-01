@@ -17,6 +17,12 @@ const userSchema: Schema<IUser> = new Schema({
     type: String,
     required: true,
   },
+  accountType: {
+    type: String,
+    enum: ["user", "admin"],
+    required: true,
+    default: "user",
+  },
 });
 
 // Delete user's scores
