@@ -52,5 +52,24 @@ export const useAuthStore = defineStore("auth", () => {
       console.error("signUpUser", error);
     }
   }
-  return { currentUser, loginUser, signUpUser };
+
+  async function refreshSession() {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data: AuthUser = (await response.json()).data;
+        currentUser.value = data;
+      } else {
+        currentUser.value = null;
+        console.log("Not logged in");
+      }
+    } catch (error) {
+      currentUser.value = null;
+      console.error("getMe", error);
+    }
+  }
+  return { currentUser, loginUser, signUpUser, refreshSession };
 });
