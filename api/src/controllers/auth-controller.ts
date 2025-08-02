@@ -63,7 +63,14 @@ class AuthController {
     if (!req.isAuthenticated()) {
       throw new UnauthorizedError("Not logged in");
     }
-    res.json({ status: "success", data: req.user });
+    const user = req.user as IUser;
+    const response: AuthResponsePayload = {
+      id: user._id?.toString(),
+      username: user.username,
+      email: user.email,
+      accountType: user.accountType,
+    };
+    res.json({ status: "success", data: response });
   }
 }
 
