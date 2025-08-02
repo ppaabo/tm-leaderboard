@@ -7,7 +7,7 @@ import {
 } from "../utils/api-errors.js";
 import { validateUserRegistration } from "../utils/user-utils.js";
 import bcrypt from "bcrypt";
-import type { LoginResponsePayload, IUser } from "../types/index.js";
+import type { AuthResponsePayload, IUser } from "../types/index.js";
 
 class AuthController {
   async createUser(req: Request, res: Response) {
@@ -16,8 +16,13 @@ class AuthController {
       await validateUserRegistration(username, email);
       const hash = await bcrypt.hash(password, 10);
       const newUser = await User.create({ username, email, password: hash });
-      console.log("User created: ", newUser);
-      res.status(201).json({ status: "success", message: "User created" });
+      const response: AuthResponsePayload = {
+        id: newUser._id?.toString(),
+        username: newUser.username,
+        email: newUser.email,
+        accountType: newUser.accountType,
+      };
+      res.status(201).json({ status: "success", data: response });
     } catch (error: unknown) {
       if (error instanceof BadRequestError) {
         throw error;
@@ -36,7 +41,7 @@ class AuthController {
     if (!user) {
       throw new UnauthorizedError("Unauthorized");
     }
-    const response: LoginResponsePayload = {
+    const response: AuthResponsePayload = {
       id: user._id?.toString(),
       username: user.username,
       email: user.email,

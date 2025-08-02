@@ -46,7 +46,7 @@ const handleSubmit = async () => {
     email: emailInput.value,
     password: passwordInput.value,
   };
-  authStore.signUpUser(user);
+  await authStore.signUpUser(user);
 };
 </script>
 

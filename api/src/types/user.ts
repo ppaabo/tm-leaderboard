@@ -12,7 +12,7 @@ export type LoginPayload = {
   password: string;
 };
 
-export type LoginResponsePayload = {
+export type AuthResponsePayload = {
   id?: string;
   username: string;
   email: string;
