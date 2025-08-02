@@ -1,6 +1,7 @@
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
+import { UnauthorizedError } from "../utils/api-errors.js";
 
 export default function configurePassport(passport: any) {
   passport.use(
@@ -14,12 +15,10 @@ export default function configurePassport(passport: any) {
           const user = await User.findOne({
             username: new RegExp(`^${username}$`, "i"),
           });
-          if (!user) return done(null, false, { message: "User not found" });
-
+          if (!user) return done(new UnauthorizedError("User not found"));
           const isMatch = await bcrypt.compare(password, user.password);
           if (!isMatch)
-            return done(null, false, { message: "Incorrect password" });
-
+            return done(new UnauthorizedError("Incorrect password"));
           return done(null, user);
         } catch (error) {
           return done(error);

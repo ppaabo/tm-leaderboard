@@ -15,6 +15,7 @@ export type LoginPayload = {
 export type LoginResponsePayload = {
   id?: string;
   username: string;
+  email: string;
   accountType: "user" | "admin";
 };
 

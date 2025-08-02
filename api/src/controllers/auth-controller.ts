@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import User from "../models/user.js";
-import { ApiError, BadRequestError } from "../utils/api-errors.js";
+import {
+  ApiError,
+  BadRequestError,
+  UnauthorizedError,
+} from "../utils/api-errors.js";
 import { validateUserRegistration } from "../utils/user-utils.js";
 import bcrypt from "bcrypt";
 import type { LoginResponsePayload, IUser } from "../types/index.js";
@@ -28,12 +32,14 @@ class AuthController {
 
   loginUser(req: Request, res: Response) {
     const user = req.user as IUser;
+    // This should be unnecesary to check
     if (!user) {
-      return res.status(401).json({ status: "error", message: "Unauthorized" });
+      throw new UnauthorizedError("Unauthorized");
     }
     const response: LoginResponsePayload = {
       id: user._id?.toString(),
       username: user.username,
+      email: user.email,
       accountType: user.accountType,
     };
     res.json({ status: "success", data: response });
@@ -41,19 +47,16 @@ class AuthController {
 
   logoutUser(req: Request, res: Response) {
     req.logout((error) => {
-      if (error)
-        return res
-          .status(500)
-          .json({ status: "error", message: "Logout failed" });
+      if (error) {
+        throw new ApiError("Logout failed", 500, error);
+      }
       res.json({ status: "success", data: "Logged out" });
     });
   }
 
   getMe(req: Request, res: Response) {
     if (!req.isAuthenticated()) {
-      return res
-        .status(401)
-        .json({ status: "error", message: "Not logged in" });
+      throw new UnauthorizedError("Not logged in");
     }
     res.json({ status: "success", data: req.user });
   }

@@ -28,3 +28,10 @@ export class BadRequestError extends ApiError {
     this.name = "BadRequestError";
   }
 }
+
+export class UnauthorizedError extends ApiError {
+  constructor(message: string = "Unauthorized", originalError?: Error) {
+    super(message, 401, originalError);
+    this.name = "UnauthorizedError";
+  }
+}
