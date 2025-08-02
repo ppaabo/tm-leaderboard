@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useAuthStore } from "@/stores/auth-store";
+
+const authStore = useAuthStore();
+</script>
 
 <template>
   <nav>
@@ -11,9 +15,10 @@
       </li>
     </ul>
     <ul>
-      <li>
+      <li v-if="!authStore.currentUser">
         <router-link :to="{ name: 'login' }">Login</router-link>
       </li>
+      <li v-else>{{ authStore.currentUser.username }}</li>
     </ul>
   </nav>
 </template>
