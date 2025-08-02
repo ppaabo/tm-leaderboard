@@ -11,7 +11,9 @@ export default function configurePassport(passport: any) {
         done: (error: any, user?: any, info?: any) => void
       ) => {
         try {
-          const user = await User.findOne({ username });
+          const user = await User.findOne({
+            username: new RegExp(`^${username}$`, "i"),
+          });
           if (!user) return done(null, false, { message: "User not found" });
 
           const isMatch = await bcrypt.compare(password, user.password);

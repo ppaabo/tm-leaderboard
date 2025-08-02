@@ -16,11 +16,15 @@ export const validateUserRegistration = async (
   username: string,
   email: string
 ) => {
-  const existingUserByUsername = await User.findOne({ username });
+  const existingUserByUsername = await User.findOne({
+    username: new RegExp(`^${username}$`, "i"),
+  });
   if (existingUserByUsername) {
     throw new BadRequestError("Username is already in use");
   }
-  const existingUserByEmail = await User.findOne({ email });
+  const existingUserByEmail = await User.findOne({
+    email: new RegExp(`^${email}$`, "i"),
+  });
   if (existingUserByEmail) {
     throw new BadRequestError("Email is already in use");
   }
