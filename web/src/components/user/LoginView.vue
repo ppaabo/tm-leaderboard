@@ -18,38 +18,35 @@ const loginUser = () => {
 
 <template>
   <article>
-    <body>
-      <form @submit.prevent="loginUser">
-        <fieldset>
-          <label>
-            Username
-            <input
-              v-model.trim="usernameInput"
-              name="first_name"
-              placeholder="username"
-              autocomplete="username"
-            />
-          </label>
-          <label>
-            Password
-            <input
-              v-model.trim="passwordInput"
-              type="password"
-              name="email"
-              placeholder="password"
-              autocomplete="current-password"
-            />
-          </label>
-        </fieldset>
-        <button type="submit">Login</button>
-      </form>
-    </body>
-    <footer>
-      <p>Don't have an account?</p>
-      <router-link :to="{ name: 'signup' }">
-        <button>Create account</button>
-      </router-link>
-    </footer>
+    <form @submit.prevent="loginUser">
+      <fieldset>
+        <label>
+          Username
+          <input
+            v-model.trim="usernameInput"
+            name="username"
+            placeholder="username"
+            autocomplete="username"
+          />
+        </label>
+        <label>
+          Password
+          <input
+            v-model="passwordInput"
+            type="password"
+            name="password"
+            placeholder="password"
+            autocomplete="current-password"
+          />
+        </label>
+      </fieldset>
+      <button type="submit">Login</button>
+    </form>
+    <small>Don't have an account?</small>
+    <br />
+    <router-link :to="{ name: 'signup' }">
+      <small>Create account</small>
+    </router-link>
   </article>
 </template>
 
