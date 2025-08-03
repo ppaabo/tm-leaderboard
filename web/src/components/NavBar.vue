@@ -18,7 +18,15 @@ const authStore = useAuthStore();
       <li v-if="!authStore.currentUser">
         <router-link :to="{ name: 'login' }">Login</router-link>
       </li>
-      <li v-else>{{ authStore.currentUser.username }}</li>
+      <li v-else @click="authStore.logoutUser">
+        <span
+          data-tooltip="Click to logout"
+          data-placement="bottom"
+          style="cursor: pointer"
+        >
+          {{ authStore.currentUser.username }}</span
+        >
+      </li>
     </ul>
   </nav>
 </template>
