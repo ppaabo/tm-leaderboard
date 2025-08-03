@@ -53,6 +53,24 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function logoutUser() {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        currentUser.value = null;
+        console.log("Logged out");
+      } else throw new Error(`Response status: ${response.status}`);
+    } catch (error) {
+      console.error("logoutUser", error);
+    }
+  }
+
   async function refreshSession() {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
@@ -71,5 +89,5 @@ export const useAuthStore = defineStore("auth", () => {
       console.error("getMe", error);
     }
   }
-  return { currentUser, loginUser, signUpUser, refreshSession };
+  return { currentUser, loginUser, signUpUser, refreshSession, logoutUser };
 });
