@@ -10,8 +10,13 @@ const authStore = useAuthStore();
       <li>
         <router-link :to="{ name: 'home' }"> Home</router-link>
       </li>
+      |
       <li>
         <router-link :to="{ name: 'gamemodes' }"> Leaderboard</router-link>
+      </li>
+      |
+      <li>
+        <router-link :to="{ name: 'submit' }">Submit Score</router-link>
       </li>
     </ul>
     <ul>
