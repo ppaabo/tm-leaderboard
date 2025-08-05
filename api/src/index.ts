@@ -1,18 +1,42 @@
 import express, { Request, Response, NextFunction } from "express";
-import { connectDB } from "./db/connectDB.js";
-import userRoutes from "./routes/userRoutes.js";
-import scoreRoutes from "./routes/scoreRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import { ApiError } from "./utils/apiErrors.js";
+import session from "express-session";
+import passport from "passport";
+import cors from "cors";
+import dotenv from "dotenv";
 
+import initPassport from "./auth/passport-config.js";
+import { connectDB } from "./db/connect-db.js";
+import userRoutes from "./routes/user-routes.js";
+import scoreRoutes from "./routes/score-routes.js";
+import categoryRoutes from "./routes/category-routes.js";
+import authRoutes from "./routes/auth-routes.js";
+import { ApiError } from "./utils/api-errors.js";
+
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.EXPRESS_PORT || 8080;
+
 app.use(express.json());
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "session_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
+
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
+initPassport(passport);
 
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/auth", authRoutes);
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   let response: { status: string; message: string };
   if (err instanceof ApiError) {
@@ -32,6 +56,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
+    console.log(process.env.SESSION_SECRET);
   } catch (err) {
     console.error("Failed to connect to MongoDB:", err);
     process.exit(1);

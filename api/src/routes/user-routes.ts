@@ -1,6 +1,6 @@
 import { Router } from "express";
-import userController from "../controllers/userController.js";
-import { validateBody } from "../middleware/validateBody.js";
+import userController from "../controllers/user-controller.js";
+import { validateBody } from "../middleware/validate-body.js";
 
 const router = Router();
 

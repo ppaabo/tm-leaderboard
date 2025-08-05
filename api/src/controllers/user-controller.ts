@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import User from "../models/user.js";
-import { ApiError, BadRequestError } from "../utils/apiErrors.js";
+import { ApiError, BadRequestError } from "../utils/api-errors.js";
 import {
   userWithIdExists,
   validateUserRegistration,
-} from "../utils/userUtils.js";
+} from "../utils/user-utils.js";
 
 class UserController {
   async createUser(req: Request, res: Response) {

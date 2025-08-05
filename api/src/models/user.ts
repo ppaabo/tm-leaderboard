@@ -1,10 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import Score from "./score.js";
-
-interface IUser extends Document {
-  username: string;
-  email?: string;
-}
+import type { IUser } from "../types/index.js";
 
 const userSchema: Schema<IUser> = new Schema({
   username: {
@@ -14,10 +10,22 @@ const userSchema: Schema<IUser> = new Schema({
   },
   email: {
     type: String,
-    required: false,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  accountType: {
+    type: String,
+    enum: ["user", "admin"],
+    required: true,
+    default: "user",
   },
 });
-// Delete user scores
+
+// Delete user's scores
 userSchema.pre(
   "deleteOne",
   { query: true, document: false },

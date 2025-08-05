@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Score from "../models/score.js";
-import { userWithIdExists } from "../utils/userUtils.js";
+import { userWithIdExists } from "../utils/user-utils.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
