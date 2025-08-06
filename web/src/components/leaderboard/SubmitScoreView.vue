@@ -60,12 +60,7 @@ const handleSubmit = async () => {
       <fieldset>
         <label>
           Select gamemode
-          <select
-            name="gamemode"
-            aria-label="Select gamemode"
-            v-model="selectedGamemode"
-            required
-          >
+          <select name="gamemode" v-model="selectedGamemode" required>
             <option disabled value="">Please select</option>
             <option
               v-for="mode in categoryStore.gamemodes"
@@ -78,12 +73,7 @@ const handleSubmit = async () => {
         </label>
         <label>
           Select map
-          <select
-            name="map"
-            aria-label="Select map"
-            v-model="selectedMap"
-            required
-          >
+          <select name="map" v-model="selectedMap" required>
             <option disabled value="">Please select</option>
             <option
               v-for="map in categoryStore.maps"
@@ -100,7 +90,6 @@ const handleSubmit = async () => {
             :type="scoreType"
             name="score"
             :placeholder="scorePlaceholder"
-            aria-label="Input score"
             v-model="inputScore"
             :pattern="scoreType === 'text' ? timeTrialScorePattern : undefined"
             required

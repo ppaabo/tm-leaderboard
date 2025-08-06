@@ -88,7 +88,6 @@ watch(passwordConfirmInput, () => {
           <input
             v-model.trim="usernameInput"
             name="username"
-            aria-label="username"
             placeholder="username"
             autocomplete="username"
             required
@@ -105,7 +104,6 @@ watch(passwordConfirmInput, () => {
             v-model.trim="emailInput"
             type="email"
             name="email"
-            aria-label="email"
             placeholder="email"
             autocomplete="email"
             required
@@ -122,7 +120,6 @@ watch(passwordConfirmInput, () => {
             v-model="passwordInput"
             type="password"
             name="password"
-            aria-label="password"
             placeholder="password"
             autocomplete="new-password"
             required
@@ -139,7 +136,6 @@ watch(passwordConfirmInput, () => {
             v-model="passwordConfirmInput"
             type="password"
             name="passwordConfirm"
-            aria-label="confirm password"
             placeholder="confirm password"
             autocomplete="new-password"
             required
