@@ -15,3 +15,10 @@ export type LoginPayload = {
   username: string;
   password: string;
 };
+
+export type SignUpValidationState = {
+  username: boolean | undefined;
+  email: boolean | undefined;
+  password: boolean | undefined;
+  passwordConfirm: boolean | undefined;
+};

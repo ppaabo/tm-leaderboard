@@ -1,7 +1,7 @@
-export interface LeaderboardUser {
+export type LeaderboardUser = {
   _id: string;
   username: string;
-}
+};
 
 export interface LeaderboardEntryData {
   _id: string;
