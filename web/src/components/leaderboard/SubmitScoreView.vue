@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth-store";
 import { useCategoryStore } from "@/stores/category-store";
+import { useScoreStore } from "@/stores/score-store";
 import { onMounted, ref, computed } from "vue";
+import { parseTimeTrialScore } from "@/utils/score-format";
+import type { ScorePayload } from "@/types";
+
+const categoryStore = useCategoryStore();
+const authStore = useAuthStore();
+const scoreStore = useScoreStore();
 const selectedGamemode = ref("");
 const selectedMap = ref("");
 const inputScore = ref("");
-const categoryStore = useCategoryStore();
-const authStore = useAuthStore();
 
 onMounted(() => {
   categoryStore.fetchCategories();
@@ -18,42 +23,34 @@ const scoreLabel = computed(() =>
     : "Input score"
 );
 const scorePlaceholder = computed(() =>
-  selectedGamemode.value === "time-trial" ? "mm:ss:ms" : "Score"
+  selectedGamemode.value === "time-trial" ? "mm:ss.ms" : "Score"
 );
 const scoreType = computed(() =>
   selectedGamemode.value === "time-trial" ? "text" : "number"
 );
 
-const timeTrialScorePattern = "^\\d{2}:\\d{2}:\\d{2}$";
+const timeTrialScorePattern = "\\d{1,2}:\\d{2}\\.\\d{2}";
 
 const handleSubmit = async () => {
   if (!authStore.currentUser) {
     console.error("Not logged in");
     return;
   }
-  const newScore = {
+  let formattedScore: number = 0;
+  try {
+    if (scoreType.value === "text") {
+      formattedScore = parseTimeTrialScore(inputScore.value);
+    } else formattedScore = Number(inputScore.value);
+  } catch (error) {
+    console.error("Parsing score failed: ", error);
+  }
+  const newScore: ScorePayload = {
     user: authStore.currentUser.id,
     gamemode: selectedGamemode.value,
     map: selectedMap.value,
-    score: inputScore.value,
+    score: formattedScore,
   };
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/scores`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newScore),
-    });
-    if (response.ok) {
-      const data = (await response.json()).data;
-      console.log("Score submitted:", data);
-    } else {
-      throw new Error(`Response status: ${response.status}`);
-    }
-  } catch (error) {
-    console.error(`Submitting score failed: ${error}`);
-  }
+  scoreStore.submitScore(newScore);
 };
 </script>
 
