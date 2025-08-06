@@ -22,3 +22,8 @@ export type SignUpValidationState = {
   password: boolean | undefined;
   passwordConfirm: boolean | undefined;
 };
+
+export type LoginValidationState = {
+  username: boolean | undefined;
+  password: boolean | undefined;
+};
