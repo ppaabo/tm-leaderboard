@@ -4,3 +4,7 @@ export type ScorePayload = {
   map: string;
   score: number;
 };
+
+export type ScoreValidationState = {
+  score: boolean | undefined;
+};

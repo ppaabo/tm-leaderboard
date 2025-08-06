@@ -2,9 +2,9 @@
 import { useAuthStore } from "@/stores/auth-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useScoreStore } from "@/stores/score-store";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, reactive, watch } from "vue";
 import { parseTimeTrialScore } from "@/utils/score-format";
-import type { ScorePayload } from "@/types";
+import type { ScorePayload, ScoreValidationState } from "@/types";
 
 const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
@@ -12,6 +12,7 @@ const scoreStore = useScoreStore();
 const selectedGamemode = ref("");
 const selectedMap = ref("");
 const inputScore = ref("");
+const hasSubmitted = ref(false);
 
 onMounted(() => {
   categoryStore.fetchCategories();
@@ -29,20 +30,48 @@ const scoreType = computed(() =>
   selectedGamemode.value === "time-trial" ? "text" : "number"
 );
 
-const timeTrialScorePattern = "\\d{1,2}:\\d{2}\\.\\d{2}";
+const validation = reactive<ScoreValidationState>({
+  score: undefined,
+});
+const validateScore = (): number | null => {
+  const input = inputScore.value;
+  if (!input) {
+    validation.score = true;
+    return null;
+  }
+  if (scoreType.value === "text") {
+    const value = inputScore.value.trim();
+    const timeTrialRegex = /^\d{1,2}:\d{2}\.\d{2}$/;
+    if (!timeTrialRegex.test(value)) {
+      validation.score = true;
+      return null;
+    }
+    try {
+      const parsed = parseTimeTrialScore(value);
+      validation.score = false;
+      return parsed;
+    } catch (error) {
+      validation.score = true;
+      return null;
+    }
+  } else {
+    const num = Number(input);
+    if (isNaN(num) || num < 0) {
+      validation.score = true;
+      return null;
+    }
+    validation.score = false;
+    return num;
+  }
+};
 
 const handleSubmit = async () => {
+  hasSubmitted.value = true;
+  const formattedScore = validateScore();
+  if (validation.score || formattedScore === null) return;
   if (!authStore.currentUser) {
     console.error("Not logged in");
     return;
-  }
-  let formattedScore: number = 0;
-  try {
-    if (scoreType.value === "text") {
-      formattedScore = parseTimeTrialScore(inputScore.value);
-    } else formattedScore = Number(inputScore.value);
-  } catch (error) {
-    console.error("Parsing score failed: ", error);
   }
   const newScore: ScorePayload = {
     user: authStore.currentUser.id,
@@ -52,10 +81,20 @@ const handleSubmit = async () => {
   };
   scoreStore.submitScore(newScore);
 };
+
+watch(inputScore, () => {
+  if (hasSubmitted.value) validateScore();
+});
+
+watch(selectedGamemode, () => {
+  inputScore.value = "";
+  validation.score = undefined;
+  hasSubmitted.value = false;
+});
 </script>
 
 <template>
-  <article>
+  <article v-if="authStore.currentUser">
     <form @submit.prevent="handleSubmit">
       <fieldset>
         <label>
@@ -87,18 +126,28 @@ const handleSubmit = async () => {
         <label v-if="selectedGamemode">
           {{ scoreLabel }}
           <input
+            :key="scoreType"
             :type="scoreType"
             name="score"
             :placeholder="scorePlaceholder"
             v-model="inputScore"
-            :pattern="scoreType === 'text' ? timeTrialScorePattern : undefined"
             required
+            :aria-invalid="validation.score"
+            aria-describedby="score-helper"
           />
+          <small v-if="validation.score" id="score-helper">
+            {{
+              scoreType === "text"
+                ? "Format must be mm.ss.ms (e.g. 01:30.50)"
+                : "Score must be a valid number"
+            }}
+          </small>
         </label>
       </fieldset>
       <button type="submit">Submit</button>
     </form>
   </article>
+  <p v-else>You must be logged in to submit scores!</p>
 </template>
 
 <style scoped></style>
