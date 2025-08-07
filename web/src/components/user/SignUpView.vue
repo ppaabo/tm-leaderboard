@@ -10,6 +10,7 @@ const emailInput = ref("");
 const passwordInput = ref("");
 const passwordConfirmInput = ref("");
 const hasSubmitted = ref(false);
+const successMessage = ref("");
 const router = useRouter();
 
 // Basic validation stuff for displaying validation states
@@ -61,7 +62,12 @@ const handleSubmit = async () => {
       password: passwordInput.value,
     };
     const success = await authStore.signUpUser(user);
-    if (success) router.push({ name: "home" });
+    if (success) {
+      successMessage.value = "Account created! Redirecting to homepage...";
+      setTimeout(() => {
+        router.push({ name: "home" });
+      }, 4000);
+    }
   }
 };
 
@@ -84,6 +90,9 @@ watch(passwordConfirmInput, () => {
 
 <template>
   <article>
+    <p class="pico-color-cyan-200" v-if="successMessage">
+      {{ successMessage }}
+    </p>
     <form @submit.prevent="handleSubmit">
       <fieldset>
         <label>

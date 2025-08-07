@@ -8,6 +8,7 @@ const authStore = useAuthStore();
 const usernameInput = ref("");
 const passwordInput = ref("");
 const hasSubmitted = ref(false);
+const successMessage = ref("");
 const router = useRouter();
 
 const validation = reactive<LoginValidationState>({
@@ -33,7 +34,12 @@ const handleSubmit = async () => {
       password: passwordInput.value,
     };
     const success = await authStore.loginUser(user);
-    if (success) router.push({ name: "home" });
+    if (success) {
+      successMessage.value = "Login succesful! Redirecting to homepage...";
+      setTimeout(() => {
+        router.push({ name: "home" });
+      }, 4000);
+    }
   }
 };
 
@@ -47,6 +53,9 @@ watch(passwordInput, () => {
 
 <template>
   <article>
+    <p class="pico-color-cyan-200" v-if="successMessage">
+      {{ successMessage }}
+    </p>
     <form @submit.prevent="handleSubmit">
       <fieldset>
         <label>
