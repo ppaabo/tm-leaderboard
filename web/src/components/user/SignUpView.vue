@@ -1,53 +1,82 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
-import type { RegisterPayload } from "@/types";
+import type { RegisterPayload, SignUpValidationState } from "@/types";
 
 const authStore = useAuthStore();
-
 const usernameInput = ref("");
 const emailInput = ref("");
 const passwordInput = ref("");
 const passwordConfirmInput = ref("");
+const hasSubmitted = ref(false);
 
-// For displaying validation states & basic validation of inputs
-const usernameTouched = ref(false);
-const emailTouched = ref(false);
-const passwordTouched = ref(false);
-const passwordConfirmTouched = ref(false);
-const isUsernameValid = computed(() => usernameInput.value.length >= 3);
-const isEmailValid = computed(() =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)
-);
-const isPasswordValid = computed(() => passwordInput.value.length >= 6);
-const isPasswordMatch = computed(
-  () =>
-    passwordInput.value === passwordConfirmInput.value &&
-    passwordInput.value.length > 0
-);
-const isPasswordConfirmInvalid = computed(
-  () =>
-    passwordConfirmTouched.value &&
-    isPasswordValid.value &&
-    !isPasswordMatch.value
-);
+// Basic validation stuff for displaying validation states
+// field: false = value is valid (aria-invalid=false)
+const validation = reactive<SignUpValidationState>({
+  username: undefined,
+  email: undefined,
+  password: undefined,
+  passwordConfirm: undefined,
+});
+const validateUsername = () => {
+  const value = usernameInput.value.trim();
+  validation.username = value.length >= 4 ? false : true;
+};
+const validateEmail = () => {
+  const value = emailInput.value.trim();
+  validation.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? false : true;
+};
+const validatePassword = () => {
+  const value = passwordInput.value;
+  validation.password = value.length >= 6 ? false : true;
+};
+const validatePasswordConfirm = () => {
+  const pass = passwordInput.value;
+  const confirm = passwordConfirmInput.value;
+  if (pass.length < 6 || confirm.length === 0) {
+    validation.passwordConfirm = true;
+  } else {
+    validation.passwordConfirm = pass === confirm ? false : true;
+  }
+};
 
 const handleSubmit = async () => {
+  // Show validation states after user submits for the first time
+  hasSubmitted.value = true;
+  validateUsername();
+  validateEmail();
+  validatePassword();
+  validatePasswordConfirm();
   if (
-    !isUsernameValid.value ||
-    !isEmailValid.value ||
-    !isPasswordValid.value ||
-    !isPasswordMatch.value
+    !validation.username &&
+    !validation.email &&
+    !validation.password &&
+    !validation.passwordConfirm
   ) {
-    return;
+    const user: RegisterPayload = {
+      username: usernameInput.value,
+      email: emailInput.value,
+      password: passwordInput.value,
+    };
+    await authStore.signUpUser(user);
   }
-  const user: RegisterPayload = {
-    username: usernameInput.value,
-    email: emailInput.value,
-    password: passwordInput.value,
-  };
-  await authStore.signUpUser(user);
 };
+
+watch(usernameInput, () => {
+  if (hasSubmitted.value) validateUsername();
+});
+watch(emailInput, () => {
+  if (hasSubmitted.value) validateEmail();
+});
+watch(passwordInput, () => {
+  if (hasSubmitted.value) {
+    validatePassword();
+    validatePasswordConfirm();
+  }
+});
+watch(passwordConfirmInput, () => {
+  if (hasSubmitted.value) validatePasswordConfirm();
+});
 </script>
 
 <template>
@@ -59,19 +88,14 @@ const handleSubmit = async () => {
           <input
             v-model.trim="usernameInput"
             name="username"
-            aria-label="username"
             placeholder="username"
             autocomplete="username"
             required
-            @input="usernameTouched = true"
-            :aria-invalid="usernameTouched ? !isUsernameValid : undefined"
+            :aria-invalid="validation.username"
             aria-describedby="username-helper"
           />
-          <small
-            v-if="usernameTouched && !isUsernameValid"
-            id="username-helper"
-          >
-            Username must be at least 3 characters
+          <small v-if="validation.username" id="username-helper">
+            Username must be at least 4 characters
           </small>
         </label>
         <label>
@@ -80,15 +104,13 @@ const handleSubmit = async () => {
             v-model.trim="emailInput"
             type="email"
             name="email"
-            aria-label="email"
             placeholder="email"
             autocomplete="email"
             required
-            @input="emailTouched = true"
-            :aria-invalid="emailTouched ? !isEmailValid : undefined"
+            :aria-invalid="validation.email"
             aria-describedby="email-helper"
           />
-          <small v-if="emailTouched && !isEmailValid" id="email-helper">
+          <small v-if="validation.email" id="email-helper">
             Please provide a valid email address!
           </small>
         </label>
@@ -98,18 +120,13 @@ const handleSubmit = async () => {
             v-model="passwordInput"
             type="password"
             name="password"
-            aria-label="password"
             placeholder="password"
             autocomplete="new-password"
             required
-            @input="passwordTouched = true"
-            :aria-invalid="passwordTouched ? !isPasswordValid : undefined"
+            :aria-invalid="validation.password"
             aria-describedby="password-helper"
           />
-          <small
-            v-if="passwordTouched && !isPasswordValid"
-            id="password-helper"
-          >
+          <small v-if="validation.password" id="password-helper">
             Password must be at least 6 characters
           </small>
         </label>
@@ -119,19 +136,13 @@ const handleSubmit = async () => {
             v-model="passwordConfirmInput"
             type="password"
             name="passwordConfirm"
-            aria-label="confirm password"
             placeholder="confirm password"
             autocomplete="new-password"
             required
-            @input="passwordConfirmTouched = true"
-            :aria-invalid="
-              passwordConfirmTouched
-                ? !(isPasswordValid && isPasswordMatch)
-                : undefined
-            "
+            :aria-invalid="validation.passwordConfirm"
             aria-describedby="password-confirm-helper"
           />
-          <small v-if="isPasswordConfirmInvalid" id="password-confirm-helper">
+          <small v-if="validation.passwordConfirm" id="password-confirm-helper">
             Passwords do not match
           </small>
         </label>
@@ -139,10 +150,10 @@ const handleSubmit = async () => {
       <button
         type="submit"
         :disabled="
-          !isUsernameValid ||
-          !isEmailValid ||
-          !isPasswordValid ||
-          !isPasswordMatch
+          validation.username ||
+          validation.email ||
+          validation.password ||
+          validation.passwordConfirm
         "
       >
         Sign Up

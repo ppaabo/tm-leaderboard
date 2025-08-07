@@ -5,6 +5,7 @@ import CategoryListView from "@/components/leaderboard/CategoryListView.vue";
 import HomeView from "@/components/HomeView.vue";
 import LoginView from "@/components/user/LoginView.vue";
 import SignUpView from "@/components/user/SignUpView.vue";
+import SubmitScoreView from "./components/leaderboard/SubmitScoreView.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -21,6 +22,7 @@ const routes = [
     component: LeaderboardView,
     props: true,
   },
+  { path: "/submit", name: "submit", component: SubmitScoreView },
   {
     path: "/login",
     name: "login",
