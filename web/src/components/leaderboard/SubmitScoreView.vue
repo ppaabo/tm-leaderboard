@@ -13,7 +13,7 @@ const selectedGamemode = ref("");
 const selectedMap = ref("");
 const inputScore = ref("");
 const hasSubmitted = ref(false);
-
+const successMessage = ref("");
 onMounted(() => {
   categoryStore.fetchCategories();
 });
@@ -33,36 +33,38 @@ const scoreType = computed(() =>
 const validation = reactive<ScoreValidationState>({
   score: undefined,
 });
+
 const validateScore = (): number | null => {
   const input = inputScore.value;
   if (!input) {
     validation.score = true;
     return null;
   }
+
   if (scoreType.value === "text") {
-    const value = inputScore.value.trim();
+    const value = input.trim();
     const timeTrialRegex = /^\d{1,2}:\d{2}\.\d{2}$/;
-    if (!timeTrialRegex.test(value)) {
-      validation.score = true;
-      return null;
+    if (timeTrialRegex.test(value)) {
+      try {
+        const parsed = parseTimeTrialScore(value);
+        validation.score = false;
+        return parsed;
+      } catch (error) {
+        validation.score = true;
+        return null;
+      }
     }
-    try {
-      const parsed = parseTimeTrialScore(value);
-      validation.score = false;
-      return parsed;
-    } catch (error) {
-      validation.score = true;
-      return null;
-    }
-  } else {
-    const num = Number(input);
-    if (isNaN(num) || num < 0) {
-      validation.score = true;
-      return null;
-    }
+    validation.score = true;
+    return null;
+  }
+
+  const num = Number(input);
+  if (!isNaN(num) && num >= 0) {
     validation.score = false;
     return num;
   }
+  validation.score = true;
+  return null;
 };
 
 const handleSubmit = async () => {
@@ -80,6 +82,13 @@ const handleSubmit = async () => {
     score: formattedScore,
   };
   scoreStore.submitScore(newScore);
+  successMessage.value = "Score submitted succesfully!";
+  setTimeout(() => {
+    selectedGamemode.value = "";
+    selectedMap.value = "";
+    inputScore.value = "";
+    successMessage.value = "";
+  }, 4000);
 };
 
 watch(inputScore, () => {
@@ -95,6 +104,9 @@ watch(selectedGamemode, () => {
 
 <template>
   <article v-if="authStore.currentUser">
+    <p class="pico-color-cyan-200" v-if="successMessage">
+      {{ successMessage }}
+    </p>
     <form @submit.prevent="handleSubmit">
       <fieldset>
         <label>
