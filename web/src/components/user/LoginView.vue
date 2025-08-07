@@ -2,11 +2,13 @@
 import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
 import type { LoginPayload, LoginValidationState } from "@/types";
+import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const usernameInput = ref("");
 const passwordInput = ref("");
 const hasSubmitted = ref(false);
+const router = useRouter();
 
 const validation = reactive<LoginValidationState>({
   username: undefined,
@@ -30,7 +32,8 @@ const handleSubmit = async () => {
       username: usernameInput.value,
       password: passwordInput.value,
     };
-    await authStore.loginUser(user);
+    const success = await authStore.loginUser(user);
+    if (success) router.push({ name: "home" });
   }
 };
 

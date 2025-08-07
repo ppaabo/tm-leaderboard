@@ -2,6 +2,7 @@
 import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
 import type { RegisterPayload, SignUpValidationState } from "@/types";
+import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const usernameInput = ref("");
@@ -9,6 +10,7 @@ const emailInput = ref("");
 const passwordInput = ref("");
 const passwordConfirmInput = ref("");
 const hasSubmitted = ref(false);
+const router = useRouter();
 
 // Basic validation stuff for displaying validation states
 // field: false = value is valid (aria-invalid=false)
@@ -58,7 +60,8 @@ const handleSubmit = async () => {
       email: emailInput.value,
       password: passwordInput.value,
     };
-    await authStore.signUpUser(user);
+    const success = await authStore.signUpUser(user);
+    if (success) router.push({ name: "home" });
   }
 };
 
