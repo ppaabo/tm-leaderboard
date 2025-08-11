@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { AuthUser, RegisterPayload, LoginPayload } from "@/types";
+import { useNotification } from "@kyvg/vue3-notification";
 
 export const useAuthStore = defineStore("auth", () => {
   const currentUser = ref<AuthUser | null>(null);
+  const { notify } = useNotification();
 
   async function loginUser(userObj: LoginPayload): Promise<boolean> {
     try {
@@ -22,12 +24,22 @@ export const useAuthStore = defineStore("auth", () => {
         const data: AuthUser = (await response.json()).data;
         currentUser.value = data;
         console.log("Login succesful: ", data);
+        notify({
+          type: "success",
+          title: "Success",
+          text: `Welcome back, ${data.username}!`,
+        });
         return true;
       } else {
         throw new Error(`Response status: ${response.status}`);
       }
     } catch (error) {
       console.error("loginUser", error);
+      notify({
+        type: "error",
+        title: "Login Failed",
+        text: "Invalid username or password. Please try again.",
+      });
       return false;
     }
   }
@@ -49,10 +61,20 @@ export const useAuthStore = defineStore("auth", () => {
         const data: AuthUser = (await response.json()).data;
         currentUser.value = data;
         console.log("Signup succesful: ", data);
+        notify({
+          type: "success",
+          title: "Account Created",
+          text: `Welcome, ${data.username}!`,
+        });
         return true;
       } else throw new Error(`Response status: ${response.status}`);
     } catch (error) {
       console.error("signUpUser", error);
+      notify({
+        type: "error",
+        title: "Registration Failed",
+        text: "Could not create account. The username or email may already be taken.",
+      });
       return false;
     }
   }
@@ -69,9 +91,17 @@ export const useAuthStore = defineStore("auth", () => {
       if (response.ok) {
         currentUser.value = null;
         console.log("Logged out");
+        notify({
+          type: "info",
+          text: "You have been logged out",
+        });
       } else throw new Error(`Response status: ${response.status}`);
     } catch (error) {
       console.error("logoutUser", error);
+      notify({
+        type: "error",
+        text: "Logout failed. Please try again.",
+      });
     }
   }
 
