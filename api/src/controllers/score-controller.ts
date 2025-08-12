@@ -22,6 +22,16 @@ class ScoreController {
     res.json({ status: "success", data: scores });
   }
 
+  async getScoresByUser(req: Request, res: Response) {
+    const userId = req.params.userId;
+    await userWithIdExists(userId);
+    const scores = await Score.find({ user: userId })
+      .sort({ timestamp: -1 })
+      .populate("user", "username");
+
+    res.json({ status: "success", data: scores });
+  }
+
   async getLeaderboard(req: Request, res: Response) {
     const gamemode = req.params.gamemode;
     const map = req.params.map;
