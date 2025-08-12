@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { ScorePayload } from "@/types";
+import type { ScorePayload, LeaderboardEntryData } from "@/types";
 import { useNotification } from "@kyvg/vue3-notification";
 
 export const useScoreStore = defineStore("score", () => {
@@ -33,5 +33,27 @@ export const useScoreStore = defineStore("score", () => {
     }
   }
 
-  return { submitScore };
+  async function getScoresByUser(
+    username: string
+  ): Promise<LeaderboardEntryData[]> {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/scores/${username}`
+      );
+      if (response.ok) {
+        const data = (await response.json()).data;
+        return data;
+      } else throw new Error(`Response status: ${response.status}`);
+    } catch (error) {
+      console.error("getScoresByUser", error);
+      notify({
+        type: "error",
+        title: "Error",
+        text: "Fetching scores failed!",
+      });
+      return [];
+    }
+  }
+
+  return { submitScore, getScoresByUser };
 });

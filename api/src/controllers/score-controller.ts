@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Score from "../models/score.js";
 import { userWithIdExists } from "../utils/user-utils.js";
+import User from "../models/user.js";
+import { NotFoundError } from "../utils/api-errors.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
@@ -22,10 +24,26 @@ class ScoreController {
     res.json({ status: "success", data: scores });
   }
 
-  async getScoresByUser(req: Request, res: Response) {
+  async getScoresByUserId(req: Request, res: Response) {
     const userId = req.params.userId;
     await userWithIdExists(userId);
     const scores = await Score.find({ user: userId })
+      .sort({ timestamp: -1 })
+      .populate("user", "username");
+
+    res.json({ status: "success", data: scores });
+  }
+
+  async getScoresByUsername(req: Request, res: Response) {
+    const username = req.params.username;
+    const user = await User.findOne({
+      username: new RegExp(`^${username}$`, "i"),
+    });
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    const scores = await Score.find({ user: user._id })
       .sort({ timestamp: -1 })
       .populate("user", "username");
 

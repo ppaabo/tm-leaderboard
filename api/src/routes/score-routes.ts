@@ -12,6 +12,6 @@ router.post(
 );
 
 router.get("/:gamemode/:map", scoreController.getLeaderboard);
-router.get("/:userId", scoreController.getScoresByUser);
+router.get("/:username", scoreController.getScoresByUsername);
 
 export default router;
