@@ -13,7 +13,6 @@ const selectedGamemode = ref("");
 const selectedMap = ref("");
 const inputScore = ref("");
 const hasSubmitted = ref(false);
-const successMessage = ref("");
 onMounted(() => {
   categoryStore.fetchCategories();
 });
@@ -82,13 +81,11 @@ const handleSubmit = async () => {
     score: formattedScore,
   };
   scoreStore.submitScore(newScore);
-  successMessage.value = "Score submitted succesfully!";
   setTimeout(() => {
     selectedGamemode.value = "";
     selectedMap.value = "";
     inputScore.value = "";
-    successMessage.value = "";
-  }, 4000);
+  }, 3000);
 };
 
 watch(inputScore, () => {
@@ -104,9 +101,6 @@ watch(selectedGamemode, () => {
 
 <template>
   <article v-if="authStore.currentUser">
-    <p class="pico-color-cyan-200" v-if="successMessage">
-      {{ successMessage }}
-    </p>
     <form @submit.prevent="handleSubmit">
       <fieldset>
         <label>
