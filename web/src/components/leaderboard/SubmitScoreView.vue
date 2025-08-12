@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useScoreStore } from "@/stores/score-store";
 import { onMounted, ref, computed, reactive, watch } from "vue";
-import { parseTimeTrialScore } from "@/utils/score-format";
+import { validateScore } from "@/utils/score-format";
 import type { ScorePayload, ScoreValidationState } from "@/types";
 
 const categoryStore = useCategoryStore();
@@ -13,6 +13,7 @@ const selectedGamemode = ref("");
 const selectedMap = ref("");
 const inputScore = ref("");
 const hasSubmitted = ref(false);
+
 onMounted(() => {
   categoryStore.fetchCategories();
 });
@@ -28,47 +29,22 @@ const scorePlaceholder = computed(() =>
 const scoreType = computed(() =>
   selectedGamemode.value === "time-trial" ? "text" : "number"
 );
-
 const validation = reactive<ScoreValidationState>({
   score: undefined,
 });
 
-const validateScore = (): number | null => {
-  const input = inputScore.value;
-  if (!input) {
-    validation.score = true;
-    return null;
-  }
-
-  if (scoreType.value === "text") {
-    const value = input.trim();
-    const timeTrialRegex = /^\d{1,2}:\d{2}\.\d{2}$/;
-    if (timeTrialRegex.test(value)) {
-      try {
-        const parsed = parseTimeTrialScore(value);
-        validation.score = false;
-        return parsed;
-      } catch (error) {
-        validation.score = true;
-        return null;
-      }
-    }
-    validation.score = true;
-    return null;
-  }
-
-  const num = Number(input);
-  if (!isNaN(num) && num >= 0) {
-    validation.score = false;
-    return num;
-  }
-  validation.score = true;
-  return null;
+const validateCurrentScore = (): number | null => {
+  const result = validateScore(
+    inputScore.value,
+    scoreType.value as "text" | "number"
+  );
+  validation.score = !result.isValid;
+  return result.value;
 };
 
 const handleSubmit = async () => {
   hasSubmitted.value = true;
-  const formattedScore = validateScore();
+  const formattedScore = validateCurrentScore();
   if (validation.score || formattedScore === null) return;
   if (!authStore.currentUser) {
     console.error("Not logged in");
@@ -89,7 +65,7 @@ const handleSubmit = async () => {
 };
 
 watch(inputScore, () => {
-  if (hasSubmitted.value) validateScore();
+  if (hasSubmitted.value) validateCurrentScore();
 });
 
 watch(selectedGamemode, () => {

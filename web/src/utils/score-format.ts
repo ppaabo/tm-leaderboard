@@ -1,3 +1,4 @@
+import type { ScoreValidationResult } from "@/types";
 export function formatTimeTrialScore(ms: number): string {
   const minutes = Math.floor(ms / 60000);
   const seconds = Math.floor((ms % 60000) / 1000);
@@ -35,4 +36,35 @@ export function parseTimeTrialScore(timeStr: string): number {
   }
 
   return minutes * 60000 + seconds * 1000 + milliseconds * 10;
+}
+
+export function validateScore(
+  input: string,
+  type: "text" | "number"
+): ScoreValidationResult {
+  if (!input) {
+    return { isValid: false, value: null };
+  }
+
+  if (type === "text") {
+    const value = input.trim();
+    const timeTrialRegex = /^\d{1,2}:\d{2}\.\d{2}$/;
+
+    if (timeTrialRegex.test(value)) {
+      try {
+        const parsed = parseTimeTrialScore(value);
+        return { isValid: true, value: parsed };
+      } catch (error) {
+        return { isValid: false, value: null };
+      }
+    }
+    return { isValid: false, value: null };
+  }
+
+  const num = Number(input);
+  if (!isNaN(num) && num >= 0) {
+    return { isValid: true, value: num };
+  }
+
+  return { isValid: false, value: null };
 }
