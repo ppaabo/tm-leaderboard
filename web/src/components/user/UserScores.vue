@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/category-store";
-import { useScoreStore } from "@/stores/score-store";
-import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
-import { formatTimeTrialScore } from "@/utils/score-format";
-import { ref, onMounted, computed } from "vue";
+import type { LeaderboardEntryDisplay } from "@/types";
+import { computed } from "vue";
 
-const props = defineProps<{ username: string }>();
-const userScores = ref<LeaderboardEntryDisplay[]>([]);
 const categoryStore = useCategoryStore();
-const scoreStore = useScoreStore();
+const props = defineProps<{
+  userScores: LeaderboardEntryDisplay[];
+}>();
 
 const scoresByGamemode = computed(() => {
   const groups: Record<string, LeaderboardEntryDisplay[]> = {};
   // Group by gamemode
-  userScores.value.forEach((score) => {
+  props.userScores.forEach((score) => {
     if (!groups[score.gamemode]) {
       groups[score.gamemode] = [];
     }
@@ -28,23 +26,6 @@ const scoresByGamemode = computed(() => {
     });
   });
   return groups;
-});
-
-onMounted(async () => {
-  await categoryStore.fetchCategories();
-  const data: LeaderboardEntryData[] = await scoreStore.getScoresByUser(
-    props.username
-  );
-  if (data) {
-    userScores.value = data.map((entry) => ({
-      ...entry,
-      rawScore: entry.score,
-      score:
-        entry.gamemode === "time-trial"
-          ? formatTimeTrialScore(entry.score)
-          : entry.score.toLocaleString("en-US"),
-    }));
-  }
 });
 
 const getGamemodeName = (id: string) =>
