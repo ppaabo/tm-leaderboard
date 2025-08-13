@@ -64,5 +64,34 @@ export const useScoreStore = defineStore("score", () => {
     }
   }
 
-  return { submitScore, getScoresByUser };
+  async function getLeaderboard(
+    gamemode: string,
+    map: string
+  ): Promise<LeaderboardEntryData[] | null> {
+    try {
+      const response = await fetch(`/api/scores/${gamemode}/${map}`);
+      if (response.ok) {
+        const data: LeaderboardEntryData[] = (await response.json()).data;
+        return data;
+      }
+      if (response.status === 404) {
+        notify({
+          type: "error",
+          title: "Error",
+          text: "Given gamemode or map is not valid",
+        });
+        return null;
+      } else throw new Error(`Response status: ${response.status}`);
+    } catch (error) {
+      console.error("getLeaderboard: ", error);
+      notify({
+        type: "error",
+        title: "Error",
+        text: "Fetching leaderboard failed!",
+      });
+      return null;
+    }
+  }
+
+  return { submitScore, getScoresByUser, getLeaderboard };
 });
