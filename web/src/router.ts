@@ -6,6 +6,7 @@ import HomeView from "@/components/HomeView.vue";
 import LoginView from "@/components/user/LoginView.vue";
 import SignUpView from "@/components/user/SignUpView.vue";
 import SubmitScoreView from "./components/leaderboard/SubmitScoreView.vue";
+import UserProfileView from "./components/user/UserProfileView.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -32,6 +33,12 @@ const routes = [
     path: "/signup",
     name: "signup",
     component: SignUpView,
+  },
+  {
+    path: "/user/:username",
+    name: "user",
+    component: UserProfileView,
+    props: true,
   },
 ];
 
