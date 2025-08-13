@@ -6,10 +6,12 @@ import { formatTimeTrialScore } from "@/utils/score-format";
 import { useScoreStore } from "@/stores/score-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useRouter } from "vue-router";
+import LoadingIndicator from "../LoadingIndicator.vue";
 
 const props = defineProps<{ username: string }>();
 const userScores = ref<LeaderboardEntryDisplay[]>([]);
 const userNotFound = ref(false);
+const isLoading = ref(true);
 const scoreStore = useScoreStore();
 const categoryStore = useCategoryStore();
 const router = useRouter();
@@ -34,6 +36,7 @@ onMounted(async () => {
           : entry.score.toLocaleString("en-US"),
     }));
   }
+  isLoading.value = false;
 });
 
 const formattedUsername = computed(() => {
@@ -44,7 +47,8 @@ const formattedUsername = computed(() => {
 </script>
 
 <template>
-  <p v-if="userNotFound">User not found, redirecting to home page...</p>
+  <LoadingIndicator v-if="isLoading" message="Loading user profile..." />
+  <p v-else-if="userNotFound">User not found, redirecting to home page...</p>
   <template v-else>
     <h1>{{ formattedUsername }}'s Profile</h1>
     <UserScores :userScores="userScores" />
