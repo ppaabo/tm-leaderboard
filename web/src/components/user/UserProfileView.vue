@@ -51,6 +51,7 @@ const formattedUsername = computed(() => {
   <p v-else-if="userNotFound">User not found, redirecting to home page...</p>
   <template v-else>
     <h1>{{ formattedUsername }}'s Profile</h1>
+    <hr />
     <UserScores :userScores="userScores" />
   </template>
 </template>

@@ -34,7 +34,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
 </script>
 <template>
   <p v-if="userScores.length === 0">No scores found for the user</p>
-  <div
+  <section
     v-else
     v-for="(scores, gamemode) in scoresByGamemode"
     :key="gamemode"
@@ -57,17 +57,11 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
         </tr>
       </tbody>
     </table>
-  </div>
+  </section>
 </template>
 
 <style scoped>
 .gamemode-section {
   margin-bottom: 2rem;
-}
-
-h3 {
-  margin-bottom: 0.5rem;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 0.25rem;
 }
 </style>

@@ -3,10 +3,12 @@ import { useCategoryStore } from "@/stores/category-store";
 import { computed, onMounted, ref } from "vue";
 import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
 import { formatTimeTrialScore } from "@/utils/score-format";
+import LoadingIndicator from "../LoadingIndicator.vue";
 
 const props = defineProps<{ gamemode: string; map: string }>();
 const leaderboard = ref<LeaderboardEntryDisplay[]>([]);
 const store = useCategoryStore();
+const isLoading = ref(true);
 
 onMounted(async () => {
   store.fetchCategories();
@@ -27,10 +29,20 @@ onMounted(async () => {
       }));
     }
   }
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 2000);
 });
 
 const gamemodeObj = computed(() => store.getGamemodeById(props.gamemode));
 const mapObj = computed(() => store.getMapById(props.map));
+
+const getPlacementText = (index: number): string => {
+  if (index === 0) return "🥇";
+  if (index === 1) return "🥈";
+  if (index === 2) return "🥉";
+  return (index + 1).toString();
+};
 </script>
 <template>
   <p><b>Gamemode: </b>{{ gamemodeObj?.name || props.gamemode }}</p>
@@ -38,13 +50,24 @@ const mapObj = computed(() => store.getMapById(props.map));
   <table class="striped">
     <thead>
       <tr>
+        <th>Placement</th>
         <th>Username</th>
         <th>Score</th>
         <th>Date</th>
       </tr>
     </thead>
-    <tbody>
-      <tr v-for="entry in leaderboard" :key="entry._id">
+    <tbody v-if="isLoading">
+      <tr>
+        <td colspan="4" class="loading-cell">
+          <LoadingIndicator inline message="Loading data..." />
+        </td>
+      </tr>
+    </tbody>
+    <tbody v-else>
+      <tr v-for="(entry, index) in leaderboard" :key="entry._id">
+        <td class="placement">
+          {{ getPlacementText(index) }}
+        </td>
         <td>{{ entry.user.username }}</td>
         <td>{{ entry.score }}</td>
         <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
@@ -52,3 +75,12 @@ const mapObj = computed(() => store.getMapById(props.map));
     </tbody>
   </table>
 </template>
+<style scoped>
+.placement {
+  font-weight: 600;
+}
+.loading-cell {
+  text-align: center;
+  padding: 2rem 0;
+}
+</style>
