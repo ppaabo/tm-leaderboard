@@ -5,25 +5,35 @@ import UserScores from "./UserScores.vue";
 import { formatTimeTrialScore } from "@/utils/score-format";
 import { useScoreStore } from "@/stores/score-store";
 import { useCategoryStore } from "@/stores/category-store";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{ username: string }>();
 const userScores = ref<LeaderboardEntryDisplay[]>([]);
+const userNotFound = ref(false);
 const scoreStore = useScoreStore();
 const categoryStore = useCategoryStore();
+const router = useRouter();
 
 onMounted(async () => {
   await categoryStore.fetchCategories();
-  const data: LeaderboardEntryData[] = await scoreStore.getScoresByUser(
+  const data: LeaderboardEntryData[] | null = await scoreStore.getScoresByUser(
     props.username
   );
-  userScores.value = data.map((entry) => ({
-    ...entry,
-    rawScore: entry.score,
-    score:
-      entry.gamemode === "time-trial"
-        ? formatTimeTrialScore(entry.score)
-        : entry.score.toLocaleString("en-US"),
-  }));
+  if (data === null) {
+    userNotFound.value = true;
+    setTimeout(() => {
+      router.push("/");
+    }, 3000);
+  } else {
+    userScores.value = data.map((entry) => ({
+      ...entry,
+      rawScore: entry.score,
+      score:
+        entry.gamemode === "time-trial"
+          ? formatTimeTrialScore(entry.score)
+          : entry.score.toLocaleString("en-US"),
+    }));
+  }
 });
 
 const formattedUsername = computed(() => {
@@ -34,8 +44,9 @@ const formattedUsername = computed(() => {
 </script>
 
 <template>
-  <div class="user-profile">
+  <p v-if="userNotFound">User not found, redirecting to home page...</p>
+  <template v-else>
     <h1>{{ formattedUsername }}'s Profile</h1>
     <UserScores :userScores="userScores" />
-  </div>
+  </template>
 </template>

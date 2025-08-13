@@ -35,7 +35,7 @@ export const useScoreStore = defineStore("score", () => {
 
   async function getScoresByUser(
     username: string
-  ): Promise<LeaderboardEntryData[]> {
+  ): Promise<LeaderboardEntryData[] | null> {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/scores/${username}`
@@ -43,7 +43,16 @@ export const useScoreStore = defineStore("score", () => {
       if (response.ok) {
         const data = (await response.json()).data;
         return data;
-      } else throw new Error(`Response status: ${response.status}`);
+      }
+      if (response.status === 404) {
+        notify({
+          type: "error",
+          title: "User Not Found",
+          text: `User "${username}" does not exist`,
+        });
+        return null;
+      }
+      throw new Error(`Response status: ${response.status}`);
     } catch (error) {
       console.error("getScoresByUser", error);
       notify({
