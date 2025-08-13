@@ -3,6 +3,7 @@ import Score from "../models/score.js";
 import { userWithIdExists } from "../utils/user-utils.js";
 import User from "../models/user.js";
 import { NotFoundError } from "../utils/api-errors.js";
+import { Gamemode, Map } from "../models/score-metadata.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
@@ -53,6 +54,15 @@ class ScoreController {
   async getLeaderboard(req: Request, res: Response) {
     const gamemode = req.params.gamemode;
     const map = req.params.map;
+    // check if  gamemode and map exist
+    const gamemodeExists = await Gamemode.findOne({ id: gamemode });
+    if (!gamemodeExists) {
+      throw new NotFoundError(`Gamemode '${gamemode}' not found`);
+    }
+    const mapExists = await Map.findOne({ id: map });
+    if (!mapExists) {
+      throw new NotFoundError(`Map '${map}' not found`);
+    }
     const sortDirection = gamemode === "time-trial" ? "score" : "-score";
     const leaderboard = await Score.find({
       gamemode,
@@ -62,10 +72,6 @@ class ScoreController {
       .populate("user", "username");
 
     res.json({ status: "success", data: leaderboard });
-    // const leaderboard = await Score.find({
-    //   gamemode: new RegExp(`^${gamemode}$`, "i"),
-    //   map: new RegExp(`^${map}$`, "i"),
-    // }).populate("user", "username");
   }
 }
 
