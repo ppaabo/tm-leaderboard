@@ -56,7 +56,12 @@ const getPlacementText = (index: number): string => {
   if (index === 2) return "🥉";
   return (index + 1).toString();
 };
+
+const handleClick = (username: string) => {
+  router.push({ name: "user", params: { username } });
+};
 </script>
+
 <template>
   <template v-if="hasError">
     <p>Invalid gamemode or map. Redirecting...</p>
@@ -89,7 +94,13 @@ const getPlacementText = (index: number): string => {
         </tr>
       </tbody>
       <tbody v-else>
-        <tr v-for="(entry, index) in leaderboard" :key="entry._id">
+        <tr
+          v-for="(entry, index) in leaderboard"
+          :key="entry._id"
+          @click="handleClick(entry.user.username)"
+          class="clickable-row"
+          :title="`View ${entry.user.username}'s profile`"
+        >
           <td class="placement">
             {{ getPlacementText(index) }}
           </td>
@@ -112,5 +123,8 @@ const getPlacementText = (index: number): string => {
 .empty-message {
   text-align: center;
   font-style: italic;
+}
+.clickable-row {
+  cursor: pointer;
 }
 </style>
