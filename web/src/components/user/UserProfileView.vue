@@ -44,6 +44,16 @@ const formattedUsername = computed(() => {
     ? userScores.value[0].user.username
     : props.username;
 });
+
+const handleClick = (item: { gamemode: string; map: string }) => {
+  router.push({
+    name: "leaderboard",
+    params: {
+      gamemode: item.gamemode,
+      map: item.map,
+    },
+  });
+};
 </script>
 
 <template>
@@ -52,6 +62,6 @@ const formattedUsername = computed(() => {
   <template v-else>
     <h1>{{ formattedUsername }}'s Profile</h1>
     <hr />
-    <UserScores :userScores="userScores" />
+    <UserScores :userScores="userScores" @select="handleClick" />
   </template>
 </template>

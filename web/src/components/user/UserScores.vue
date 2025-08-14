@@ -8,6 +8,10 @@ const props = defineProps<{
   userScores: LeaderboardEntryDisplay[];
 }>();
 
+defineEmits<{
+  (e: "select", item: { gamemode: string; map: string }): void;
+}>();
+
 const scoresByGamemode = computed(() => {
   const groups: Record<string, LeaderboardEntryDisplay[]> = {};
   // Group by gamemode
@@ -50,7 +54,15 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
         </tr>
       </thead>
       <tbody>
-        <tr v-for="entry in scores" :key="entry._id">
+        <tr
+          v-for="entry in scores"
+          :key="entry._id"
+          @click="$emit('select', { gamemode: entry.gamemode, map: entry.map })"
+          class="clickable-row"
+          :title="`View leaderboard for: ${getGamemodeName(
+            entry.gamemode
+          )} on ${getMapName(entry.map)}`"
+        >
           <td>{{ getMapName(entry.map) }}</td>
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
@@ -63,5 +75,8 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
 <style scoped>
 .gamemode-section {
   margin-bottom: 2rem;
+}
+.clickable-row {
+  cursor: pointer;
 }
 </style>
