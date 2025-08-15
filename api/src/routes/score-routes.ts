@@ -4,14 +4,15 @@ import { validateBody } from "../middleware/validate-body.js";
 
 const router = Router();
 
-router.get("/", scoreController.getAllScores);
+router.get("/", scoreController.queryScores);
 router.post(
   "/",
   validateBody(["user", "gamemode", "map", "score"]),
   scoreController.addScore
 );
+router.get("/user/:username", scoreController.getScoresByUsername);
 
-router.get("/:gamemode/:map", scoreController.getLeaderboard);
-router.get("/:username", scoreController.getScoresByUsername);
+// router.get("/:gamemode/:map", scoreController.getLeaderboard);
+// router.get("/", scoreController.getAllScores);
 
 export default router;
