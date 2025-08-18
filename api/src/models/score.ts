@@ -15,6 +15,8 @@ scoreSchema.pre<IScore>("save", function (next) {
   next();
 });
 
+scoreSchema.index({ user: 1, gamemode: 1, map: 1 }, { unique: true });
+
 const Score = mongoose.model<IScore>("Score", scoreSchema);
 
 export default Score;
