@@ -38,7 +38,7 @@ export const useScoreStore = defineStore("score", () => {
   ): Promise<LeaderboardEntryData[] | null> {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/scores/${username}`
+        `${import.meta.env.VITE_API_URL}/scores/user/${username}`
       );
       if (response.ok) {
         const data = (await response.json()).data;
@@ -69,7 +69,14 @@ export const useScoreStore = defineStore("score", () => {
     map: string
   ): Promise<LeaderboardEntryData[] | null> {
     try {
-      const response = await fetch(`/api/scores/${gamemode}/${map}`);
+      const base = `${import.meta.env.VITE_API_URL}/scores`;
+      const url = base.startsWith("/") // handle relative url (vite proxy)
+        ? new URL(base, window.location.origin)
+        : new URL(base);
+      url.searchParams.set("gamemode", gamemode);
+      url.searchParams.set("map", map);
+
+      const response = await fetch(url);
       if (response.ok) {
         const data: LeaderboardEntryData[] = (await response.json()).data;
         return data;
