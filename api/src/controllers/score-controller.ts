@@ -10,15 +10,31 @@ class ScoreController {
   async addScore(req: Request, res: Response) {
     const { user, gamemode, map, score, timestamp = undefined } = req.body;
     await userWithIdExists(user);
-    const newScore = await Score.create({
-      user,
-      gamemode,
-      map,
-      score,
-      timestamp,
+    await validateExists(Gamemode, "Gamemode", gamemode as string);
+    await validateExists(Map, "Map", map as string);
+
+    const filter = { user, gamemode, map };
+    let update;
+    // Update if new score is better than old one
+    if (gamemode === "time-trial") {
+      update = {
+        $min: { score },
+        timestamp: timestamp || new Date(),
+      };
+    } else {
+      update = {
+        $max: { score },
+        timestamp: timestamp || new Date(),
+      };
+    }
+    const doc = await Score.findOneAndUpdate(filter, update, {
+      upsert: true,
+      new: true,
     });
-    console.log("Score added: ", newScore);
-    res.json({ status: "success", data: newScore });
+
+    if (doc.score === score) console.log("Score updated");
+    if (doc.score !== score) console.log("Score was not updated");
+    res.json({ status: "success", data: doc });
   }
 
   async getScoresByUsername(req: Request, res: Response) {
@@ -56,40 +72,3 @@ class ScoreController {
 }
 
 export default new ScoreController();
-
-// async getLeaderboard(req: Request, res: Response) {
-//   const gamemode = req.params.gamemode;
-//   const map = req.params.map;
-//   // check if  gamemode and map exist
-//   const gamemodeExists = await Gamemode.findOne({ id: gamemode });
-//   if (!gamemodeExists) {
-//     throw new NotFoundError(`Gamemode '${gamemode}' not found`);
-//   }
-//   const mapExists = await Map.findOne({ id: map });
-//   if (!mapExists) {
-//     throw new NotFoundError(`Map '${map}' not found`);
-//   }
-//   const sortDirection = gamemode === "time-trial" ? "score" : "-score";
-//   const leaderboard = await Score.find({
-//     gamemode,
-//     map,
-//   })
-//     .sort(sortDirection)
-//     .populate("user", "username");
-
-//   res.json({ status: "success", data: leaderboard });
-// }
-
-//   async getAllScores(req: Request, res: Response) {
-//   const scores = await Score.find().populate("user", "username");
-//   res.json({ status: "success", data: scores });
-// }
-
-// async getScoresByUserId(req: Request, res: Response) {
-//   const userId = req.params.userId;
-//   await userWithIdExists(userId);
-//   const scores = await Score.find({ user: userId })
-//     .sort({ timestamp: -1 })
-//     .populate("user", "username");
-//   res.json({ status: "success", data: scores });
-// }
