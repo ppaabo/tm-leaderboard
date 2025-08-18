@@ -29,7 +29,15 @@ const authStore = useAuthStore();
             {{ authStore.currentUser.username }}
           </summary>
           <ul>
-            <li><a href="#">Profile</a></li>
+            <li>
+              <router-link
+                :to="{
+                  name: 'user',
+                  params: { username: authStore.currentUser.username },
+                }"
+                >Profile</router-link
+              >
+            </li>
             <li>
               <a href="#" @click.prevent="authStore.logoutUser">Logout</a>
             </li>
