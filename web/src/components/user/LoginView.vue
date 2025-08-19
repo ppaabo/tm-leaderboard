@@ -33,9 +33,7 @@ const handleSubmit = async () => {
     };
     const success = await authStore.loginUser(user);
     if (success) {
-      setTimeout(() => {
-        router.push({ name: "home" });
-      }, 2000);
+      router.push({ name: "home" });
     }
   }
 };

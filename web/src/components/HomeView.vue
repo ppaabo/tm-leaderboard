@@ -1,8 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import CategoryListView from "@/components/leaderboard/CategoryListView.vue";
+</script>
 
 <template>
-  <h1>Home page</h1>
-  <router-link :to="{ name: 'gamemodes' }">
-    <button>View leaderboards</button>
-  </router-link>
+  <h1>Leaderboards</h1>
+  <CategoryListView />
 </template>

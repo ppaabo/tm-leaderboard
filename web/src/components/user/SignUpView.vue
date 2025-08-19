@@ -64,7 +64,7 @@ const handleSubmit = async () => {
     if (success) {
       setTimeout(() => {
         router.push({ name: "home" });
-      }, 2000);
+      }, 3000);
     }
   }
 };
