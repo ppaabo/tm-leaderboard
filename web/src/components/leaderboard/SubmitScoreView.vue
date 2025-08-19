@@ -14,8 +14,8 @@ const selectedMap = ref("");
 const inputScore = ref("");
 const hasSubmitted = ref(false);
 
-onMounted(() => {
-  categoryStore.fetchCategories();
+onMounted(async () => {
+  await categoryStore.fetchCategories();
 });
 
 const scoreLabel = computed(() =>
@@ -56,7 +56,7 @@ const handleSubmit = async () => {
     map: selectedMap.value,
     score: formattedScore,
   };
-  scoreStore.submitScore(newScore);
+  await scoreStore.submitScore(newScore);
   setTimeout(() => {
     selectedGamemode.value = "";
     selectedMap.value = "";

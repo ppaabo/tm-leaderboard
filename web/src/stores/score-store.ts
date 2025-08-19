@@ -1,9 +1,16 @@
 import { defineStore } from "pinia";
-import type { ScorePayload, LeaderboardEntryData } from "@/types";
+import type {
+  ScorePayload,
+  LeaderboardEntryData,
+  ScoreResponseData,
+  SubmitScoreResponse,
+} from "@/types";
 import { useNotification } from "@kyvg/vue3-notification";
+import { useCategoryStore } from "@/stores/category-store";
 
 export const useScoreStore = defineStore("score", () => {
   const { notify } = useNotification();
+  const categoryStore = useCategoryStore();
   async function submitScore(scorePayload: ScorePayload) {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/scores`, {
@@ -11,14 +18,11 @@ export const useScoreStore = defineStore("score", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(scorePayload),
       });
+
       if (response.ok) {
-        const data = (await response.json()).data;
-        console.log("Score submitted:", data);
-        notify({
-          type: "success",
-          title: "Success",
-          text: "Score submitted succesfully!",
-        });
+        const responseJson: SubmitScoreResponse = await response.json();
+        const data: ScoreResponseData = responseJson.data;
+        submitScoreNotification(responseJson);
         return data;
       } else {
         throw new Error(`Response status: ${response.status}`);
@@ -97,6 +101,34 @@ export const useScoreStore = defineStore("score", () => {
         text: "Fetching leaderboard failed!",
       });
       return null;
+    }
+  }
+
+  function submitScoreNotification(response: SubmitScoreResponse) {
+    const gamemode = categoryStore.getGamemodeById(response.data.gamemode);
+    const map = categoryStore.getMapById(response.data.map);
+    switch (response.result) {
+      case "created":
+        notify({
+          type: "success",
+          title: "Score added",
+          text: `Your score for ${gamemode?.name} - ${map?.name} has been added`,
+        });
+        break;
+      case "updated":
+        notify({
+          type: "success",
+          title: "Score updated",
+          text: `Your score for ${gamemode?.name} - ${map?.name} has been updated`,
+        });
+        break;
+      case "ignored":
+        notify({
+          type: "info",
+          title: "Score unchanged",
+          text: `Your previous score for ${gamemode?.name} - ${map?.name} is better, so it wasn't updated`,
+        });
+        break;
     }
   }
 

@@ -32,6 +32,7 @@ class ScoreController {
       upsert: true,
       new: true,
       includeResultMetadata: true,
+      select: "-__v",
     });
 
     const updatedExisting = result.lastErrorObject?.updatedExisting ?? false;
