@@ -17,3 +17,10 @@ export interface IMap extends Document {
   id: string;
   name: string;
 }
+
+export type ScorePayload = {
+  user: string;
+  gamemode: string;
+  map: string;
+  score: number;
+};

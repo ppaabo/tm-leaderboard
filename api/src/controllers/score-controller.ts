@@ -5,10 +5,11 @@ import User from "../models/user.js";
 import { NotFoundError } from "../utils/api-errors.js";
 import { Gamemode, Map } from "../models/score-metadata.js";
 import { buildFilter, validateExists } from "../utils/score-utils.js";
+import { ScorePayload } from "../types/score.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
-    const { user, gamemode, map, score, timestamp = undefined } = req.body;
+    const { user, gamemode, map, score }: ScorePayload = req.body;
     await userWithIdExists(user);
     await validateExists(Gamemode, "Gamemode", gamemode as string);
     await validateExists(Map, "Map", map as string);
@@ -19,22 +20,33 @@ class ScoreController {
     if (gamemode === "time-trial") {
       update = {
         $min: { score },
-        timestamp: timestamp || new Date(),
+        timestamp: new Date(),
       };
     } else {
       update = {
         $max: { score },
-        timestamp: timestamp || new Date(),
+        timestamp: new Date(),
       };
     }
-    const doc = await Score.findOneAndUpdate(filter, update, {
+    const result = await Score.findOneAndUpdate(filter, update, {
       upsert: true,
       new: true,
+      includeResultMetadata: true,
     });
 
-    if (doc.score === score) console.log("Score updated");
-    if (doc.score !== score) console.log("Score was not updated");
-    res.json({ status: "success", data: doc });
+    const updatedExisting = result.lastErrorObject?.updatedExisting ?? false;
+    const scoreChanged = result.value?.score === score;
+
+    type Outcome = "created" | "updated" | "ignored";
+    let outcome: Outcome;
+    if (!updatedExisting) outcome = "created";
+    else outcome = scoreChanged ? "updated" : "ignored";
+
+    res.status(outcome === "created" ? 201 : 200).json({
+      status: "success",
+      data: result.value,
+      result: outcome,
+    });
   }
 
   async getScoresByUsername(req: Request, res: Response) {
