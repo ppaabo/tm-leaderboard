@@ -1,7 +1,7 @@
-import mongoose, { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IScore extends Document {
-  user: mongoose.Types.ObjectId;
+  user: Types.ObjectId;
   gamemode: string;
   map: string;
   score: number;
@@ -19,7 +19,6 @@ export interface IMap extends Document {
 }
 
 export type ScorePayload = {
-  user: string;
   gamemode: string;
   map: string;
   score: number;

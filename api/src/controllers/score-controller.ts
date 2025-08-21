@@ -9,12 +9,13 @@ import { ScorePayload } from "../types/score.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
-    const { user, gamemode, map, score }: ScorePayload = req.body;
-    await userWithIdExists(user);
+    const userId: string = req.user!._id.toString();
+    const { gamemode, map, score } = req.body as ScorePayload;
+    await userWithIdExists(userId);
     await validateExists(Gamemode, "Gamemode", gamemode as string);
     await validateExists(Map, "Map", map as string);
 
-    const filter = { user, gamemode, map };
+    const filter = { user: userId, gamemode, map };
     let update;
     // Update if new score is better than old one
     if (gamemode === "time-trial") {
