@@ -16,13 +16,21 @@ class AuthController {
       await validateUserRegistration(username, email);
       const hash = await bcrypt.hash(password, 10);
       const newUser = await User.create({ username, email, password: hash });
-      const response: AuthResponsePayload = {
-        id: newUser._id?.toString(),
-        username: newUser.username,
-        email: newUser.email,
-        accountType: newUser.accountType,
-      };
-      res.status(201).json({ status: "success", data: response });
+
+      // Log the user in after signup
+      req.login(newUser, (err) => {
+        if (err) {
+          throw new ApiError("Auto-login after signup failed", 500, err);
+        }
+
+        const response: AuthResponsePayload = {
+          id: newUser._id?.toString(),
+          username: newUser.username,
+          email: newUser.email,
+          accountType: newUser.accountType,
+        };
+        res.status(201).json({ status: "success", data: response });
+      });
     } catch (error: unknown) {
       if (error instanceof BadRequestError) {
         throw error;
@@ -36,7 +44,7 @@ class AuthController {
   }
 
   loginUser(req: Request, res: Response) {
-    const user = req.user as IUser;
+    const user = req.user;
     // This should be unnecesary to check
     if (!user) {
       throw new UnauthorizedError("Unauthorized");
@@ -60,9 +68,9 @@ class AuthController {
   }
 
   getMe(req: Request, res: Response) {
-    const user = req.user as IUser;
+    const user = req.user!;
     const response: AuthResponsePayload = {
-      id: user._id?.toString(),
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
       accountType: user.accountType,
