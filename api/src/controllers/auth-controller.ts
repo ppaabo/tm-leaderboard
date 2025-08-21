@@ -60,9 +60,6 @@ class AuthController {
   }
 
   getMe(req: Request, res: Response) {
-    if (!req.isAuthenticated()) {
-      throw new UnauthorizedError("Not logged in");
-    }
     const user = req.user as IUser;
     const response: AuthResponsePayload = {
       id: user._id?.toString(),

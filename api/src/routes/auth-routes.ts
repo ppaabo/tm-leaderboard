@@ -2,6 +2,7 @@ import { Router } from "express";
 import authController from "../controllers/auth-controller.js";
 import passport from "passport";
 import { validateBody } from "../middleware/validate-body.js";
+import { requireAuth } from "../middleware/auth-middleware.js";
 
 const router = Router();
 router.post(
@@ -10,7 +11,7 @@ router.post(
   authController.createUser
 );
 router.post("/login", passport.authenticate("local"), authController.loginUser);
-router.post("/logout", authController.logoutUser);
-router.get("/me", authController.getMe);
+router.post("/logout", requireAuth, authController.logoutUser);
+router.get("/me", requireAuth, authController.getMe);
 
 export default router;
