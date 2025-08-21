@@ -51,7 +51,6 @@ const handleSubmit = async () => {
     return;
   }
   const newScore: ScorePayload = {
-    user: authStore.currentUser.id,
     gamemode: selectedGamemode.value,
     map: selectedMap.value,
     score: formattedScore,

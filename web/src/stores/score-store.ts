@@ -16,6 +16,7 @@ export const useScoreStore = defineStore("score", () => {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/scores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(scorePayload),
       });
 
