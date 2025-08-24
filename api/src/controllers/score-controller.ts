@@ -10,7 +10,9 @@ import { ScorePayload } from "../types/score.js";
 class ScoreController {
   async addScore(req: Request, res: Response) {
     const userId: string = req.user!._id.toString();
-    const { gamemode, map, score } = req.body as ScorePayload;
+    let { gamemode, map, score } = req.body as ScorePayload;
+    gamemode = gamemode.toLowerCase();
+    map = map.toLowerCase();
     await userWithIdExists(userId);
     await validateExists(Gamemode, "Gamemode", gamemode as string);
     await validateExists(Map, "Map", map as string);
@@ -31,6 +33,7 @@ class ScoreController {
     }
     const result = await Score.findOneAndUpdate(filter, update, {
       upsert: true,
+      runValidators: true,
       new: true,
       includeResultMetadata: true,
       select: "-__v",
