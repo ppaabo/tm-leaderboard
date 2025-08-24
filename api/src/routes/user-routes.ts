@@ -1,11 +1,10 @@
 import { Router } from "express";
 import userController from "../controllers/user-controller.js";
-import { validateBody } from "../middleware/validate-body.js";
+import { requireAuth } from "../middleware/auth-middleware.js";
 
 const router = Router();
 
-router.get("/", userController.getAllUsers);
-router.get("/:id", userController.getUserProfile);
-router.delete("/:id", userController.deleteUser);
+// router.get("/:id", userController.getUserProfile);
+router.delete("/me", requireAuth, userController.deleteOwnAccount);
 
 export default router;
