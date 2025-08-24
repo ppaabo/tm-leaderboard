@@ -35,6 +35,15 @@ userSchema.pre(
     next();
   }
 );
+userSchema.pre(
+  "findOneAndDelete",
+  { query: true, document: false },
+  async function (next) {
+    const userId = this.getFilter()._id;
+    await Score.deleteMany({ user: userId });
+    next();
+  }
+);
 
 const User = mongoose.model<IUser>("User", userSchema);
 
