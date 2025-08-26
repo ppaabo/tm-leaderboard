@@ -67,49 +67,57 @@ const handleClick = (username: string) => {
     <p>Invalid gamemode or map. Redirecting...</p>
   </template>
   <template v-else>
-    <p><b>Gamemode: </b>{{ gamemodeObj?.name || props.gamemode }}</p>
-    <p><b>Map: </b>{{ mapObj?.name || props.map }}</p>
-    <table class="striped">
-      <thead>
-        <tr>
-          <th>Placement</th>
-          <th>Username</th>
-          <th>Score</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody v-if="isLoading">
-        <tr>
-          <td colspan="4" class="loading-cell">
-            <LoadingIndicator inline message="Loading data..." />
-          </td>
-        </tr>
-      </tbody>
-      <tbody v-else-if="leaderboard.length === 0">
-        <tr>
-          <td colspan="4" class="empty-message">
-            No scores have been submitted for this gamemode and map yet. Be the
-            first to submit a score!
-          </td>
-        </tr>
-      </tbody>
-      <tbody v-else>
-        <tr
-          v-for="(entry, index) in leaderboard"
-          :key="entry._id"
-          @click="handleClick(entry.user.username)"
-          class="clickable-row"
-          :title="`View ${entry.user.username}'s profile`"
-        >
-          <td class="placement">
-            {{ getPlacementText(index) }}
-          </td>
-          <td>{{ entry.user.username }}</td>
-          <td>{{ entry.score }}</td>
-          <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <section>
+      <header>
+        <p>
+          <strong>Gamemode:</strong> {{ gamemodeObj?.name || props.gamemode }}
+        </p>
+        <p><strong>Map:</strong> {{ mapObj?.name || props.map }}</p>
+      </header>
+    </section>
+    <section>
+      <table class="striped">
+        <thead>
+          <tr>
+            <th>Placement</th>
+            <th>Username</th>
+            <th>Score</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody v-if="isLoading">
+          <tr>
+            <td colspan="4" class="loading-cell">
+              <LoadingIndicator inline message="Loading data..." />
+            </td>
+          </tr>
+        </tbody>
+        <tbody v-else-if="leaderboard.length === 0">
+          <tr>
+            <td colspan="4" class="empty-message">
+              No scores have been submitted for this gamemode and map yet. Be
+              the first to submit a score!
+            </td>
+          </tr>
+        </tbody>
+        <tbody v-else>
+          <tr
+            v-for="(entry, index) in leaderboard"
+            :key="entry._id"
+            @click="handleClick(entry.user.username)"
+            class="clickable-row"
+            :title="`View ${entry.user.username}'s profile`"
+          >
+            <td class="placement">
+              {{ getPlacementText(index) }}
+            </td>
+            <td>{{ entry.user.username }}</td>
+            <td>{{ entry.score }}</td>
+            <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
   </template>
 </template>
 <style scoped>
@@ -126,5 +134,12 @@ const handleClick = (username: string) => {
 }
 .clickable-row {
   cursor: pointer;
+}
+header {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--pico-secondary-background);
 }
 </style>
