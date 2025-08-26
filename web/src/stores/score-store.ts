@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
+import type { LeaderboardEntryData } from "@/types";
 import type {
   ScorePayload,
-  LeaderboardEntryData,
   ScoreResponseData,
   SubmitScoreResponse,
-} from "@/types";
+} from "shared";
 import { useNotification } from "@kyvg/vue3-notification";
 import { useCategoryStore } from "@/stores/category-store";
 

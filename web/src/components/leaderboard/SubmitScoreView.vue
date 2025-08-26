@@ -4,7 +4,8 @@ import { useCategoryStore } from "@/stores/category-store";
 import { useScoreStore } from "@/stores/score-store";
 import { onMounted, ref, computed, reactive, watch } from "vue";
 import { validateScore } from "@/utils/score-format";
-import type { ScorePayload, ScoreValidationState } from "@/types";
+import type { ScoreValidationState } from "@/types";
+import type { ScorePayload } from "shared";
 
 const categoryStore = useCategoryStore();
 const authStore = useAuthStore();

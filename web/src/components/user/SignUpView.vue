@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
-import type { RegisterPayload, SignUpValidationState } from "@/types";
+import type { SignUpValidationState } from "@/types";
+import type { RegisterPayload } from "shared";
 import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();

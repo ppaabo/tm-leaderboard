@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { AuthUser, RegisterPayload, LoginPayload } from "@/types";
+import type { AuthUser, RegisterPayload, LoginPayload } from "shared";
 import { useNotification } from "@kyvg/vue3-notification";
 
 export const useAuthStore = defineStore("auth", () => {
