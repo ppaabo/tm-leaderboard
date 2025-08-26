@@ -5,7 +5,12 @@ import User from "../models/user.js";
 import { NotFoundError } from "../utils/api-errors.js";
 import { Gamemode, Map } from "../models/score-metadata.js";
 import { buildFilter, validateExists } from "../utils/score-utils.js";
-import { ScorePayload } from "../types/score.js";
+import type {
+  ScorePayload,
+  SubmitScoreResponse,
+  SubmitScoreOutcome,
+  ScoreResponseData,
+} from "shared";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
@@ -42,16 +47,17 @@ class ScoreController {
     const updatedExisting = result.lastErrorObject?.updatedExisting ?? false;
     const scoreChanged = result.value?.score === score;
 
-    type Outcome = "created" | "updated" | "ignored";
-    let outcome: Outcome;
+    let outcome: SubmitScoreOutcome;
     if (!updatedExisting) outcome = "created";
     else outcome = scoreChanged ? "updated" : "ignored";
 
-    res.status(outcome === "created" ? 201 : 200).json({
+    const response: SubmitScoreResponse = {
       status: "success",
-      data: result.value,
+      data: result.value as unknown as ScoreResponseData,
       result: outcome,
-    });
+    };
+
+    res.status(outcome === "created" ? 201 : 200).json(response);
   }
 
   async getScoresByUsername(req: Request, res: Response) {

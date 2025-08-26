@@ -7,7 +7,7 @@ import {
 } from "../utils/api-errors.js";
 import { validateUserRegistration } from "../utils/user-utils.js";
 import bcrypt from "bcrypt";
-import type { AuthResponsePayload, IUser } from "../types/index.js";
+import type { AuthUser } from "shared";
 
 class AuthController {
   async createUser(req: Request, res: Response) {
@@ -23,8 +23,8 @@ class AuthController {
           throw new ApiError("Auto-login after signup failed", 500, err);
         }
 
-        const response: AuthResponsePayload = {
-          id: newUser._id?.toString(),
+        const response: AuthUser = {
+          id: newUser._id.toString(),
           username: newUser.username,
           email: newUser.email,
           accountType: newUser.accountType,
@@ -49,8 +49,8 @@ class AuthController {
     if (!user) {
       throw new UnauthorizedError("Unauthorized");
     }
-    const response: AuthResponsePayload = {
-      id: user._id?.toString(),
+    const response: AuthUser = {
+      id: user._id.toString(),
       username: user.username,
       email: user.email,
       accountType: user.accountType,
@@ -69,7 +69,7 @@ class AuthController {
 
   getMe(req: Request, res: Response) {
     const user = req.user!;
-    const response: AuthResponsePayload = {
+    const response: AuthUser = {
       id: user._id.toString(),
       username: user.username,
       email: user.email,
