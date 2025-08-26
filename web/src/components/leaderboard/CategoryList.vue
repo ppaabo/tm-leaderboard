@@ -1,16 +1,14 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   items: Array<{ id: string; name: string }>;
-  title?: string;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
   (e: "select", item: { id: string; name: string }): void;
 }>();
 </script>
 
 <template>
-  <h2 v-if="title">{{ title }}</h2>
   <div class="button-container">
     <button
       v-for="item in items"

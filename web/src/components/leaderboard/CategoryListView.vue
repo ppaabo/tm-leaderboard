@@ -31,5 +31,6 @@ function handleSelect(item: { id: string; name: string }) {
 </script>
 
 <template>
-  <CategoryList :items="items" :title="title" @select="handleSelect" />
+  <h2>{{ title }}</h2>
+  <CategoryList :items="items" @select="handleSelect" />
 </template>
