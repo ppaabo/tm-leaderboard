@@ -17,7 +17,7 @@ onMounted(() => {
     <router-view />
   </main>
   <footer>
-    <small>Footer</small>
+    <small>Tricky Madness - Leaderboards</small>
   </footer>
 </template>
 
