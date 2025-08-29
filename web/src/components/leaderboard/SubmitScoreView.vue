@@ -26,8 +26,8 @@ const handleFormSubmit = async (payload: {
     map: payload.map,
     score: payload.score,
   };
-  await scoreStore.submitScore(newScore);
-  resetFormTrigger.value++; // Reset form
+  let result = await scoreStore.submitScore(newScore);
+  if (result === "created" || result === "updated") resetFormTrigger.value++; // Reset form
 };
 </script>
 
@@ -40,7 +40,17 @@ const handleFormSubmit = async (payload: {
       @submit="handleFormSubmit"
     />
   </article>
-  <p v-else>You must be logged in to submit scores!</p>
+  <template v-else>
+    <p>
+      You need to be logged in to submit scores.
+      <router-link :to="{ name: 'login' }">Log in</router-link>
+    </p>
+
+    <p>
+      Don't have an account?
+      <router-link :to="{ name: 'signup' }">Create a new account</router-link>
+    </p>
+  </template>
 </template>
 
 <style scoped></style>
