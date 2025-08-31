@@ -29,6 +29,11 @@ services:
         - action: sync
           path: ./web/src
           target: /app/src
+          ignore:
+            - stores/
+        - action: sync+restart
+          path: ./web/src/stores
+          target: /app/src/stores
         - action: rebuild
           path: ./web/package.json
   mongodb:

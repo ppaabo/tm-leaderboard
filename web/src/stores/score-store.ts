@@ -1,10 +1,6 @@
 import { defineStore } from "pinia";
 import type { LeaderboardEntryData } from "@/types";
-import type {
-  ScorePayload,
-  ScoreResponseData,
-  SubmitScoreResponse,
-} from "shared";
+import type { ScorePayload, SubmitScoreResponse } from "shared";
 import { useNotification } from "@kyvg/vue3-notification";
 import { useCategoryStore } from "@/stores/category-store";
 
@@ -22,9 +18,8 @@ export const useScoreStore = defineStore("score", () => {
 
       if (response.ok) {
         const responseJson: SubmitScoreResponse = await response.json();
-        const data: ScoreResponseData = responseJson.data;
         submitScoreNotification(responseJson);
-        return data;
+        return responseJson.result; // created | updated | ignored
       } else {
         throw new Error(`Response status: ${response.status}`);
       }
@@ -35,6 +30,7 @@ export const useScoreStore = defineStore("score", () => {
         title: "Error",
         text: "Submitting score failed!",
       });
+      return "error";
     }
   }
 
