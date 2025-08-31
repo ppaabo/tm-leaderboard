@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/category-store";
 import { useScoreStore } from "@/stores/score-store";
+import { useRouter } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
 import { formatTimeTrialScore } from "@/utils/score-format";
+import LeaderboardTable from "./LeaderboardTable.vue";
 import LoadingIndicator from "../LoadingIndicator.vue";
-import { useRouter } from "vue-router";
 
 const categoryStore = useCategoryStore();
 const scoreStore = useScoreStore();
@@ -13,7 +14,6 @@ const router = useRouter();
 const props = defineProps<{ gamemode: string; map: string }>();
 const leaderboard = ref<LeaderboardEntryDisplay[]>([]);
 const isLoading = ref(true);
-const hasError = ref(false);
 
 onMounted(async () => {
   await categoryStore.fetchCategories();
@@ -21,12 +21,8 @@ onMounted(async () => {
     props.gamemode,
     props.map
   );
-
   if (data === null) {
-    hasError.value = true;
-    setTimeout(() => {
-      router.push("/leaderboard");
-    }, 3000);
+    router.push("/leaderboard");
   } else {
     if (props.gamemode === "time-trial") {
       leaderboard.value = data.map((entry) => ({
@@ -41,8 +37,8 @@ onMounted(async () => {
         score: entry.score.toLocaleString("en-US"),
       }));
     }
+    isLoading.value = false;
   }
-  isLoading.value = false;
 });
 
 const gamemodeObj = computed(() =>
@@ -50,21 +46,14 @@ const gamemodeObj = computed(() =>
 );
 const mapObj = computed(() => categoryStore.getMapById(props.map));
 
-const getPlacementText = (index: number): string => {
-  if (index === 0) return "🥇";
-  if (index === 1) return "🥈";
-  if (index === 2) return "🥉";
-  return (index + 1).toString();
-};
-
 const handleClick = (username: string) => {
   router.push({ name: "user", params: { username } });
 };
 </script>
 
 <template>
-  <template v-if="hasError">
-    <p>Invalid gamemode or map. Redirecting...</p>
+  <template v-if="isLoading">
+    <LoadingIndicator message="Loading leaderboard..." />
   </template>
   <template v-else>
     <section>
@@ -75,71 +64,28 @@ const handleClick = (username: string) => {
         <p><strong>Map:</strong> {{ mapObj?.name || props.map }}</p>
       </header>
     </section>
-    <section>
-      <table class="striped">
-        <thead>
-          <tr>
-            <th>Placement</th>
-            <th>Username</th>
-            <th>Score</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody v-if="isLoading">
-          <tr>
-            <td colspan="4" class="loading-cell">
-              <LoadingIndicator inline message="Loading data..." />
-            </td>
-          </tr>
-        </tbody>
-        <tbody v-else-if="leaderboard.length === 0">
-          <tr>
-            <td colspan="4" class="empty-message">
-              No scores have been submitted for this gamemode and map yet. Be
-              the first to submit a score!
-            </td>
-          </tr>
-        </tbody>
-        <tbody v-else>
-          <tr
-            v-for="(entry, index) in leaderboard"
-            :key="entry._id"
-            @click="handleClick(entry.user.username)"
-            class="clickable-row"
-            :title="`View ${entry.user.username}'s profile`"
-          >
-            <td class="placement">
-              {{ getPlacementText(index) }}
-            </td>
-            <td>{{ entry.user.username }}</td>
-            <td>{{ entry.score }}</td>
-            <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+    <template v-if="leaderboard.length === 0">
+      <p class="empty-message">
+        No scores have been submitted for this gamemode and map yet. Be the
+        first to submit a score!
+      </p>
+    </template>
+    <template v-else>
+      <LeaderboardTable :leaderboard="leaderboard" @rowClick="handleClick" />
+    </template>
   </template>
 </template>
+
 <style scoped>
-.placement {
-  font-weight: 600;
-}
-.loading-cell {
-  text-align: center;
-  padding: 2rem 0;
-}
-.empty-message {
-  text-align: center;
-  font-style: italic;
-}
-.clickable-row {
-  cursor: pointer;
-}
 header {
   display: flex;
   justify-content: center;
   gap: 1rem;
   padding: 0.5rem;
   border-bottom: 2px solid var(--pico-secondary-background);
+}
+.empty-message {
+  text-align: center;
+  font-style: italic;
 }
 </style>

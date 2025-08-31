@@ -3,9 +3,7 @@ import CategoryListView from "@/components/leaderboard/CategoryListView.vue";
 </script>
 
 <template>
-  <section>
-    <CategoryListView />
-  </section>
+  <CategoryListView />
 </template>
 
 <style scoped></style>
