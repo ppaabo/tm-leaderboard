@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "dev": "tsx watch --clear-screen=false src/",
     "seed": "tsx ./seed/seeds.ts"
   },
@@ -12,15 +12,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "shared": "*",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "mongodb-memory-server": "^10.2.0",
     "mongoose": "^8.16.3",
     "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "shared": "*"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -31,6 +32,7 @@
     "@types/node": "^24.1.0",
     "@types/passport-local": "^1.0.38",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }
