@@ -53,15 +53,33 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-(async () => {
-  try {
-    await connectDB();
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
-    console.log(process.env.SESSION_SECRET);
-  } catch (err) {
-    console.error("Failed to connect to MongoDB:", err);
-    process.exit(1);
-  }
-})();
+// Only start the server if not in test mode
+if (process.env.NODE_ENV !== "test") {
+  (async () => {
+    try {
+      await connectDB();
+      app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+      });
+      console.log(process.env.SESSION_SECRET);
+    } catch (err) {
+      console.error("Failed to connect to MongoDB:", err);
+      process.exit(1);
+    }
+  })();
+}
+
+export default app;
+
+// (async () => {
+//   try {
+//     await connectDB();
+//     app.listen(PORT, () => {
+//       console.log(`Server is running on http://localhost:${PORT}`);
+//     });
+//     console.log(process.env.SESSION_SECRET);
+//   } catch (err) {
+//     console.error("Failed to connect to MongoDB:", err);
+//     process.exit(1);
+//   }
+// })();
