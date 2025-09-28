@@ -1,13 +1,14 @@
 import { beforeAll, afterAll, describe, it, expect, inject } from "vitest";
 import mongoose from "mongoose";
 import request from "supertest";
-import { insertTestUser } from "./seed-data/user-data.js";
+import { clearAllCollections, insertTestUser } from "./helpers.js";
 import User from "../src/models/user.js";
 import app from "../src/index.js";
 
 const MONGO_URI = inject("MONGO_URI");
 beforeAll(async () => {
   await mongoose.connect(MONGO_URI);
+  await clearAllCollections();
 });
 
 afterAll(async () => {
