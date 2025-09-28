@@ -1,0 +1,96 @@
+import { beforeAll, afterAll, describe, it, expect, inject } from "vitest";
+import mongoose from "mongoose";
+import request from "supertest";
+import app from "../src/index.js";
+import User from "../src/models/user.js";
+import Score from "../src/models/score.js";
+import type { IScore } from "../src/types/score.js";
+import { scores } from "./seed-data/score-data.js";
+import {
+  insertScoreMetadata,
+  insertScores,
+  insertUsers,
+  insertTestUser,
+  clearAllCollections,
+} from "./helpers.js";
+
+const MONGO_URI = inject("MONGO_URI");
+
+beforeAll(async () => {
+  await mongoose.connect(MONGO_URI);
+  await clearAllCollections();
+  await insertScoreMetadata();
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+});
+
+const testUser = {
+  username: "scoreuser",
+  email: "scoreuser@example.com",
+  password: "scorepass",
+};
+
+describe("Score routes", () => {
+  describe("POST /api/scores", () => {
+    let agent: ReturnType<typeof request.agent>;
+
+    beforeAll(async () => {
+      await insertTestUser(testUser);
+      agent = request.agent(app);
+      await agent
+        .post("/api/auth/login")
+        .send({ username: testUser.username, password: testUser.password });
+    });
+
+    it("should allow authenticated user to add a score", async () => {
+      const res = await agent
+        .post("/api/scores")
+        .send({ gamemode: "time-trial", map: "radiant-falls", score: 195000 });
+      expect(res.status).toBe(201);
+
+      // Check DB directly for created score
+      const score = await Score.findOne({ score: 195000 });
+      expect(score).not.toBeNull();
+      expect(score?.gamemode).toBe("time-trial");
+    });
+  });
+
+  describe("GET /api/scores", () => {
+    beforeAll(async () => {
+      await User.deleteMany({});
+      await Score.deleteMany({});
+      await insertUsers();
+      await insertScores();
+    });
+
+    it("should return all scores", async () => {
+      const res = await request(app).get("/api/scores");
+      expect(res.status).toBe(200);
+      expect(res.body.data.length).toBe(scores.length);
+    });
+
+    it("should filter scores by gamemode", async () => {
+      const res = await request(app).get("/api/scores?gamemode=freestyle");
+      expect(res.status).toBe(200);
+      expect(
+        res.body.data.every((s: IScore) => s.gamemode === "freestyle")
+      ).toBe(true);
+    });
+
+    it("should filter scores by map", async () => {
+      const res = await request(app).get("/api/scores?map=radiant-falls");
+      expect(res.status).toBe(200);
+      expect(
+        res.body.data.every((s: IScore) => s.map === "radiant-falls")
+      ).toBe(true);
+    });
+
+    it("should populate user field", async () => {
+      const res = await request(app).get("/api/scores");
+      expect(res.status).toBe(200);
+      expect(res.body.data[0].user).toHaveProperty("username");
+    });
+  });
+});
