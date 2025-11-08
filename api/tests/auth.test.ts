@@ -21,40 +21,34 @@ const testUser = {
   password: "authpass",
 };
 
-describe("Auth routes", () => {
-  describe("Registration", () => {
-    beforeAll(async () => {
-      await User.deleteMany({});
-    });
+describe("POST /api/signup", () => {
+  it("should create a new account", async () => {
+    const res = await request(app).post("/api/auth/signup").send(testUser);
+    expect(res.status).toBe(201);
+    expect(res.body.data.username).toBe(testUser.username);
+  });
+});
 
-    it("should create a new account", async () => {
-      const res = await request(app).post("/api/auth/signup").send(testUser);
-      expect(res.status).toBe(201);
-      expect(res.body.data.username).toBe(testUser.username);
-    });
+describe("POST /api/login and /api/logout", () => {
+  beforeAll(async () => {
+    await User.deleteMany({});
+    await insertTestUser(testUser);
   });
 
-  describe("Login", () => {
-    beforeAll(async () => {
-      await User.deleteMany({});
-      await insertTestUser(testUser);
-    });
+  it("should allow valid login", async () => {
+    const res = await request(app)
+      .post("/api/auth/login")
+      .send({ username: testUser.username, password: testUser.password });
+    expect(res.status).toBe(200);
+    expect(res.body.data.username).toBe(testUser.username);
+  });
 
-    it("should allow valid login", async () => {
-      const res = await request(app)
-        .post("/api/auth/login")
-        .send({ username: testUser.username, password: testUser.password });
-      expect(res.status).toBe(200);
-      expect(res.body.data.username).toBe(testUser.username);
-    });
-
-    it("should support login-logout flow", async () => {
-      const agent = request.agent(app);
-      await agent
-        .post("/api/auth/login")
-        .send({ username: testUser.username, password: testUser.password });
-      const logout = await agent.post("/api/auth/logout");
-      expect(logout.status).toBe(200);
-    });
+  it("should support login-logout flow", async () => {
+    const agent = request.agent(app);
+    await agent
+      .post("/api/auth/login")
+      .send({ username: testUser.username, password: testUser.password });
+    const logout = await agent.post("/api/auth/logout");
+    expect(logout.status).toBe(200);
   });
 });
