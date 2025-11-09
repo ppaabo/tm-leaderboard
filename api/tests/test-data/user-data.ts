@@ -28,4 +28,12 @@ export const testUser = {
   username: "testuser",
   email: "testuser@example.com",
   password: "testpass",
+  accountType: "user",
+};
+
+export const adminTestUser = {
+  username: "testadmin",
+  email: "testadmin@example.com",
+  password: "testpass",
+  accountType: "admin",
 };
