@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import Score from "../src/models/score.js";
 import User from "../src/models/user.js";
-import { scores } from "./seed-data/score-data.js";
-import { users } from "./seed-data/user-data.js";
+import { scores } from "./test-data/score-data.js";
+import { users } from "./test-data/user-data.js";
 import bcrypt from "bcrypt";
 import { RegisterPayload } from "shared";
 import { Gamemode, Map } from "../src/models/score-metadata.js";
-import { gamemodes, maps } from "./seed-data/category-data.js";
+import { gamemodes, maps } from "./test-data/category-data.js";
 
 // Clear all collections
 export async function clearAllCollections() {

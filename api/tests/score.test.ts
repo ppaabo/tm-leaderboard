@@ -5,8 +5,8 @@ import app from "../src/index.js";
 import User from "../src/models/user.js";
 import Score from "../src/models/score.js";
 import type { IScore } from "../src/types/score.js";
-import { scores } from "./seed-data/score-data.js";
-import { users } from "./seed-data/user-data.js";
+import { scores } from "./test-data/score-data.js";
+import { users } from "./test-data/user-data.js";
 import {
   insertScoreMetadata,
   insertScores,
