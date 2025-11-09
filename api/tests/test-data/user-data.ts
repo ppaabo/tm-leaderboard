@@ -23,3 +23,9 @@ export const users = [
     accountType: "user",
   },
 ];
+
+export const testUser = {
+  username: "testuser",
+  email: "testuser@example.com",
+  password: "testpass",
+};
