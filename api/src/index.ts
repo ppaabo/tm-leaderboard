@@ -10,7 +10,6 @@ import userRoutes from "./routes/user-routes.js";
 import scoreRoutes from "./routes/score-routes.js";
 import categoryRoutes from "./routes/category-routes.js";
 import authRoutes from "./routes/auth-routes.js";
-import protectedRoutes from "./routes/protected-routes.js";
 import { ApiError } from "./utils/api-errors.js";
 
 dotenv.config();
@@ -38,7 +37,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/protected", protectedRoutes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   let response: { status: string; message: string };
