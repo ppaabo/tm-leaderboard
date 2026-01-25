@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run --reporter=verbose",
     "dev": "tsx watch --clear-screen=false src/",
     "seed": "tsx ./seed/seeds.ts"
   },
@@ -17,7 +17,6 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
-    "mongodb-memory-server": "^10.2.0",
     "mongoose": "^8.16.3",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
@@ -31,6 +30,9 @@
     "@types/express-session": "^1.18.2",
     "@types/node": "^24.1.0",
     "@types/passport-local": "^1.0.38",
+    "@types/supertest": "^6.0.3",
+    "mongodb-memory-server": "^10.2.1",
+    "supertest": "^7.1.4",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

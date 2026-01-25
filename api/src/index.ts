@@ -10,7 +10,6 @@ import userRoutes from "./routes/user-routes.js";
 import scoreRoutes from "./routes/score-routes.js";
 import categoryRoutes from "./routes/category-routes.js";
 import authRoutes from "./routes/auth-routes.js";
-import protectedRoutes from "./routes/protected-routes.js";
 import { ApiError } from "./utils/api-errors.js";
 
 dotenv.config();
@@ -38,7 +37,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/protected", protectedRoutes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   let response: { status: string; message: string };
@@ -53,15 +51,33 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-(async () => {
-  try {
-    await connectDB();
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
-    console.log(process.env.SESSION_SECRET);
-  } catch (err) {
-    console.error("Failed to connect to MongoDB:", err);
-    process.exit(1);
-  }
-})();
+// Only start the server if not in test mode
+if (process.env.NODE_ENV !== "test") {
+  (async () => {
+    try {
+      await connectDB();
+      app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+      });
+      console.log(process.env.SESSION_SECRET);
+    } catch (err) {
+      console.error("Failed to connect to MongoDB:", err);
+      process.exit(1);
+    }
+  })();
+}
+
+export default app;
+
+// (async () => {
+//   try {
+//     await connectDB();
+//     app.listen(PORT, () => {
+//       console.log(`Server is running on http://localhost:${PORT}`);
+//     });
+//     console.log(process.env.SESSION_SECRET);
+//   } catch (err) {
+//     console.error("Failed to connect to MongoDB:", err);
+//     process.exit(1);
+//   }
+// })();
