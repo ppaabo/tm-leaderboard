@@ -5,6 +5,8 @@ import UserScores from "./UserScores.vue";
 import { formatTimeTrialScore } from "@/utils/score-format";
 import { useScoreStore } from "@/stores/score-store";
 import { useCategoryStore } from "@/stores/category-store";
+import { useAuthStore } from "@/stores/auth-store";
+import { useUserStore } from "@/stores/user-store";
 import { useRouter } from "vue-router";
 import LoadingIndicator from "../LoadingIndicator.vue";
 
@@ -14,12 +16,14 @@ const userNotFound = ref(false);
 const isLoading = ref(true);
 const scoreStore = useScoreStore();
 const categoryStore = useCategoryStore();
+const authStore = useAuthStore();
+const userStore = useUserStore();
 const router = useRouter();
 
 onMounted(async () => {
   await categoryStore.fetchCategories();
   const data: LeaderboardEntryData[] | null = await scoreStore.getScoresByUser(
-    props.username
+    props.username,
   );
   if (data === null) {
     userNotFound.value = true;
@@ -45,7 +49,7 @@ const formattedUsername = computed(() => {
     : props.username;
 });
 
-const handleClick = (item: { gamemode: string; map: string }) => {
+const handleScoreClick = (item: { gamemode: string; map: string }) => {
   router.push({
     name: "leaderboard",
     params: {
@@ -54,6 +58,19 @@ const handleClick = (item: { gamemode: string; map: string }) => {
     },
   });
 };
+
+const handleDeleteClick = async () => {
+  const success = await userStore.deleteOwnAccount();
+  if (success) {
+    setTimeout(() => {
+      router.push({ name: "home" });
+    }, 2000);
+  }
+};
+
+const isOwnProfile = computed(() => {
+  return authStore.currentUser?.username === props.username;
+});
 </script>
 
 <template>
@@ -62,6 +79,10 @@ const handleClick = (item: { gamemode: string; map: string }) => {
   <template v-else>
     <h1>{{ formattedUsername }}'s Profile</h1>
     <hr />
-    <UserScores :userScores="userScores" @select="handleClick" />
+    <UserScores :userScores="userScores" @select="handleScoreClick" />
+    <template v-if="isOwnProfile">
+      <h1>Account settings</h1>
+      <button @click="handleDeleteClick">Delete Account</button>
+    </template>
   </template>
 </template>

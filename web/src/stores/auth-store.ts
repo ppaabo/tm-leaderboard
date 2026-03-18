@@ -18,7 +18,7 @@ export const useAuthStore = defineStore("auth", () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userObj),
-        }
+        },
       );
       if (response.ok) {
         const data: AuthUser = (await response.json()).data;
@@ -55,7 +55,7 @@ export const useAuthStore = defineStore("auth", () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userObj),
-        }
+        },
       );
       if (response.ok) {
         const data: AuthUser = (await response.json()).data;
@@ -86,7 +86,7 @@ export const useAuthStore = defineStore("auth", () => {
         {
           method: "POST",
           credentials: "include",
-        }
+        },
       );
       if (response.ok) {
         currentUser.value = null;
@@ -123,5 +123,6 @@ export const useAuthStore = defineStore("auth", () => {
       console.error("getMe", error);
     }
   }
+
   return { currentUser, loginUser, signUpUser, refreshSession, logoutUser };
 });
