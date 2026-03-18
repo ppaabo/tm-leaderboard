@@ -13,11 +13,17 @@
 }
 
 :root {
-  --pico-font-family-sans-serif: "Lato", system-ui, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, Helvetica, Arial, "Helvetica Neue", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --pico-font-family-sans-serif:
+    "Lato", system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Helvetica,
+    Arial, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 nav {
   border-bottom: 2px solid var(--pico-muted-border-color);
+}
+
+// fix for firefox (https://github.com/picocss/pico/issues/701#issuecomment-3367167118)
+nav li details.dropdown {
+  display: inline-block;
 }
