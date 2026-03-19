@@ -8,6 +8,7 @@ import SignUpView from "@/components/user/SignUpView.vue";
 import SubmitScoreView from "./components/leaderboard/SubmitScoreView.vue";
 import UserProfileView from "./components/user/UserProfileView.vue";
 import UserSettingsView from "./components/user/UserSettingsView.vue";
+import { useAuthStore } from "./stores/auth-store";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -29,11 +30,13 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginView,
+    meta: { requiresGuest: true },
   },
   {
     path: "/signup",
     name: "signup",
     component: SignUpView,
+    meta: { requiresGuest: true },
   },
   {
     path: "/user/:username",
@@ -45,12 +48,24 @@ const routes = [
     path: "/settings",
     name: "settings",
     component: UserSettingsView,
+    meta: { requiresAuth: true },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore();
+  await authStore.refreshSession();
+  if (to.meta.requiresAuth && !authStore.currentUser) {
+    return { name: "login" };
+  }
+  if (to.meta.requiresGuest && authStore.currentUser) {
+    return { name: "home" };
+  }
 });
 
 export default router;
