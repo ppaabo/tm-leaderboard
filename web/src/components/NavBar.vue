@@ -39,6 +39,9 @@ const authStore = useAuthStore();
               >
             </li>
             <li>
+              <router-link :to="{ name: 'settings' }">Settings</router-link>
+            </li>
+            <li>
               <a href="#" @click.prevent="authStore.logoutUser">Logout</a>
             </li>
           </ul>

@@ -13,7 +13,10 @@ export const useUserStore = defineStore("user", () => {
       });
       if (response.ok) {
         console.log("Account deleted");
-        notify({ type: "success", text: "Your account has been deleted" });
+        notify({
+          type: "success",
+          text: "Your account has been deleted",
+        });
         authStore.currentUser = null;
         return true;
       } else throw new Error(`Response status: ${response.status}`);

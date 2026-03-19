@@ -6,7 +6,6 @@ import { formatTimeTrialScore } from "@/utils/score-format";
 import { useScoreStore } from "@/stores/score-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useUserStore } from "@/stores/user-store";
 import { useRouter } from "vue-router";
 import LoadingIndicator from "../LoadingIndicator.vue";
 
@@ -17,7 +16,6 @@ const isLoading = ref(true);
 const scoreStore = useScoreStore();
 const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
-const userStore = useUserStore();
 const router = useRouter();
 
 watch(
@@ -29,9 +27,7 @@ watch(
       await scoreStore.getScoresByUser(props.username);
     if (data === null) {
       userNotFound.value = true;
-      setTimeout(() => {
-        router.push("/");
-      }, 3000);
+      router.push("/");
     } else {
       userScores.value = data.map((entry) => ({
         ...entry,
@@ -64,15 +60,6 @@ const handleScoreClick = (item: { gamemode: string; map: string }) => {
   });
 };
 
-const handleDeleteClick = async () => {
-  const success = await userStore.deleteOwnAccount();
-  if (success) {
-    setTimeout(() => {
-      router.push({ name: "home" });
-    }, 2000);
-  }
-};
-
 const isOwnProfile = computed(() => {
   return authStore.currentUser?.username === props.username;
 });
@@ -85,9 +72,5 @@ const isOwnProfile = computed(() => {
     <h1>{{ formattedUsername }}'s Profile</h1>
     <hr />
     <UserScores :userScores="userScores" @select="handleScoreClick" />
-    <template v-if="isOwnProfile">
-      <h1>Account settings</h1>
-      <button @click="handleDeleteClick">Delete Account</button>
-    </template>
   </template>
 </template>

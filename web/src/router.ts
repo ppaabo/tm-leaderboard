@@ -7,6 +7,7 @@ import LoginView from "@/components/user/LoginView.vue";
 import SignUpView from "@/components/user/SignUpView.vue";
 import SubmitScoreView from "./components/leaderboard/SubmitScoreView.vue";
 import UserProfileView from "./components/user/UserProfileView.vue";
+import UserSettingsView from "./components/user/UserSettingsView.vue";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
@@ -39,6 +40,11 @@ const routes = [
     name: "user",
     component: UserProfileView,
     props: true,
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    component: UserSettingsView,
   },
 ];
 
