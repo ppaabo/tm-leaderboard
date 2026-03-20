@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth-store";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const authStore = useAuthStore();
+
+const handleLogout = async () => {
+  await authStore.logoutUser();
+  router.push({ name: "home" });
+};
 </script>
 
 <template>
@@ -42,7 +49,7 @@ const authStore = useAuthStore();
               <router-link :to="{ name: 'settings' }">Settings</router-link>
             </li>
             <li>
-              <a href="#" @click.prevent="authStore.logoutUser">Logout</a>
+              <a href="#" @click.prevent="handleLogout">Logout</a>
             </li>
           </ul>
         </details>
