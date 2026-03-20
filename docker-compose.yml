@@ -31,6 +31,10 @@ services:
           target: /app/src
           ignore:
             - stores/
+            - router.ts
+        - action: sync+restart
+          path: ./web/src/router.ts
+          target: ./web/src/router.ts
         - action: sync+restart
           path: ./web/src/stores
           target: /app/src/stores

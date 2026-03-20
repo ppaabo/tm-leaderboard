@@ -50,6 +50,10 @@ const routes = [
     component: UserSettingsView,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: { name: "home" },
+  },
 ];
 
 const router = createRouter({
