@@ -31,6 +31,7 @@ const cancelDelete = () => {
 
 <template>
   <h1>Settings</h1>
+  <hr />
   <h2>Account Settings</h2>
   <button @click="openConfirmModal">Delete Account</button>
   <dialog :open="showConfirmModal">

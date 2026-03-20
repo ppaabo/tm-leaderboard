@@ -60,10 +60,10 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
   await authStore.refreshSession();
-  if (to.meta.requiresAuth && !authStore.currentUser) {
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: "login" };
   }
-  if (to.meta.requiresGuest && authStore.currentUser) {
+  if (to.meta.requiresGuest && authStore.isAuthenticated) {
     return { name: "home" };
   }
 });

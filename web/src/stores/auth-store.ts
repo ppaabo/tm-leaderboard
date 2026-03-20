@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { AuthUser, RegisterPayload, LoginPayload } from "shared";
 import { useNotification } from "@kyvg/vue3-notification";
 
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore("auth", () => {
       );
       if (response.ok) {
         const data: AuthUser = (await response.json()).data;
-        currentUser.value = data;
+        setUser(data);
         console.log("Login succesful: ", data);
         notify({
           type: "success",
@@ -59,7 +59,7 @@ export const useAuthStore = defineStore("auth", () => {
       );
       if (response.ok) {
         const data: AuthUser = (await response.json()).data;
-        currentUser.value = data;
+        setUser(data);
         console.log("Signup succesful: ", data);
         notify({
           type: "success",
@@ -89,7 +89,7 @@ export const useAuthStore = defineStore("auth", () => {
         },
       );
       if (response.ok) {
-        currentUser.value = null;
+        clearUser();
         console.log("Logged out");
         notify({
           type: "info",
@@ -113,16 +113,34 @@ export const useAuthStore = defineStore("auth", () => {
       });
       if (response.ok) {
         const data: AuthUser = (await response.json()).data;
-        currentUser.value = data;
+        setUser(data);
       } else {
-        currentUser.value = null;
+        clearUser();
         console.log("Not logged in");
       }
     } catch (error) {
-      currentUser.value = null;
+      clearUser();
       console.error("getMe", error);
     }
   }
 
-  return { currentUser, loginUser, signUpUser, refreshSession, logoutUser };
+  const isAuthenticated = computed(() => !!currentUser.value);
+
+  function clearUser() {
+    currentUser.value = null;
+  }
+
+  function setUser(user: AuthUser) {
+    currentUser.value = user;
+  }
+
+  return {
+    currentUser,
+    loginUser,
+    signUpUser,
+    refreshSession,
+    logoutUser,
+    isAuthenticated,
+    clearUser,
+  };
 });

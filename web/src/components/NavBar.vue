@@ -20,20 +20,20 @@ const authStore = useAuthStore();
       </li>
     </ul>
     <ul>
-      <li v-if="!authStore.currentUser">
+      <li v-if="!authStore.isAuthenticated">
         <router-link :to="{ name: 'login' }">Login</router-link>
       </li>
       <li v-else>
         <details class="dropdown">
           <summary role="button" class="outline">
-            {{ authStore.currentUser.username }}
+            {{ authStore.currentUser?.username }}
           </summary>
           <ul>
             <li>
               <router-link
                 :to="{
                   name: 'user',
-                  params: { username: authStore.currentUser.username },
+                  params: { username: authStore.currentUser?.username },
                 }"
                 >Profile</router-link
               >

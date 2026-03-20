@@ -20,7 +20,7 @@ const handleFormSubmit = async (payload: {
   map: string;
   score: number;
 }) => {
-  if (!authStore.currentUser) return;
+  if (!authStore.isAuthenticated) return;
   const newScore: ScorePayload = {
     gamemode: payload.gamemode,
     map: payload.map,
@@ -32,7 +32,7 @@ const handleFormSubmit = async (payload: {
 </script>
 
 <template>
-  <article v-if="authStore.currentUser">
+  <article v-if="authStore.isAuthenticated">
     <SubmitScoreForm
       :gamemodes="categoryStore.gamemodes"
       :maps="categoryStore.maps"

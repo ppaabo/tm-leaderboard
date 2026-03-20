@@ -17,7 +17,7 @@ export const useUserStore = defineStore("user", () => {
           type: "success",
           text: "Your account has been deleted",
         });
-        authStore.currentUser = null;
+        authStore.clearUser();
         return true;
       } else throw new Error(`Response status: ${response.status}`);
     } catch (error) {
