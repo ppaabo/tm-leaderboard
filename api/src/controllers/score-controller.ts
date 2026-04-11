@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Score from "../models/score.js";
 import { userWithIdExists } from "../utils/user-utils.js";
 import User from "../models/user.js";
-import { NotFoundError } from "../utils/api-errors.js";
+import { ForbiddenError, NotFoundError } from "../utils/api-errors.js";
 import { Gamemode, Map } from "../models/score-metadata.js";
 import { buildFilter, validateExists } from "../utils/score-utils.js";
 import type {
@@ -91,6 +91,22 @@ class ScoreController {
       .populate("user", "username");
 
     res.json({ status: "success", data: scores });
+  }
+
+  async deleteOwnScore(req: Request, res: Response) {
+    const score_id = req.params.score_id;
+    const userId = req.user!._id.toString();
+
+    const score = await Score.findById(score_id);
+    if (!score) {
+      throw new NotFoundError("Score not found");
+    }
+    if (score.user.toString() !== userId) {
+      throw new ForbiddenError("Forbidden");
+    }
+    await Score.deleteOne({ _id: score_id });
+    console.log("Deleted score: ", score);
+    return res.status(204).end();
   }
 }
 

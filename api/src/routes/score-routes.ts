@@ -10,9 +10,10 @@ router.post(
   "/",
   requireAuth,
   validateBody(["gamemode", "map", "score"]),
-  scoreController.addScore
+  scoreController.addScore,
 );
 router.get("/user/:username", scoreController.getScoresByUsername);
+router.delete("/:score_id", requireAuth, scoreController.deleteOwnScore);
 
 // router.get("/:gamemode/:map", scoreController.getLeaderboard);
 // router.get("/", scoreController.getAllScores);
