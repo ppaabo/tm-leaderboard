@@ -7,6 +7,7 @@ import { useCategoryStore } from "@/stores/category-store";
 export const useScoreStore = defineStore("score", () => {
   const { notify } = useNotification();
   const categoryStore = useCategoryStore();
+
   async function submitScore(scorePayload: ScorePayload) {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/scores`, {
@@ -34,12 +35,46 @@ export const useScoreStore = defineStore("score", () => {
     }
   }
 
+  async function deleteOwnScore(scoreId: string): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/scores/${scoreId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (response.ok) {
+        notify({ type: "success", title: "Score deleted" });
+        return true;
+      }
+      if (response.status === 404) {
+        notify({ type: "error", title: "Score not found" });
+        return false;
+      }
+      if (response.status === 403) {
+        notify({ type: "error", title: "Forbidden" });
+        return false;
+      }
+      throw new Error(`Unexpected error. Response status: ${response.status}`);
+    } catch (error) {
+      console.error("deleteOwnScore", error);
+      notify({
+        type: "error",
+        title: "Unexpected error",
+        text: "Deleting score failed",
+      });
+      return false;
+    }
+  }
+
   async function getScoresByUser(
-    username: string
+    username: string,
   ): Promise<LeaderboardEntryData[] | null> {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/scores/user/${username}`
+        `${import.meta.env.VITE_API_URL}/scores/user/${username}`,
       );
       if (response.ok) {
         const data = (await response.json()).data;
@@ -67,7 +102,7 @@ export const useScoreStore = defineStore("score", () => {
 
   async function getLeaderboard(
     gamemode: string,
-    map: string
+    map: string,
   ): Promise<LeaderboardEntryData[] | null> {
     try {
       const base = `${import.meta.env.VITE_API_URL}/scores`;
@@ -129,5 +164,5 @@ export const useScoreStore = defineStore("score", () => {
     }
   }
 
-  return { submitScore, getScoresByUser, getLeaderboard };
+  return { submitScore, getScoresByUser, getLeaderboard, deleteOwnScore };
 });
