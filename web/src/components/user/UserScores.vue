@@ -6,10 +6,12 @@ import { computed } from "vue";
 const categoryStore = useCategoryStore();
 const props = defineProps<{
   userScores: LeaderboardEntryDisplay[];
+  canDelete: boolean;
 }>();
 
 defineEmits<{
   (e: "select", item: { gamemode: string; map: string }): void;
+  (e: "delete", scoreId: string): void;
 }>();
 
 const scoresByGamemode = computed(() => {
@@ -51,6 +53,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
           <th>Map</th>
           <th>Score</th>
           <th>Date</th>
+          <th v-if="canDelete">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -60,12 +63,17 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
           @click="$emit('select', { gamemode: entry.gamemode, map: entry.map })"
           class="clickable-row"
           :title="`View leaderboard for: ${getGamemodeName(
-            entry.gamemode
+            entry.gamemode,
           )} on ${getMapName(entry.map)}`"
         >
           <td>{{ getMapName(entry.map) }}</td>
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
+          <td v-if="canDelete">
+            <button class="delete-btn" @click.stop="$emit('delete', entry._id)">
+              Delete
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
