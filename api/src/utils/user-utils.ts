@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import User from "../models/user.js";
 import { NotFoundError, BadRequestError } from "./api-errors.js";
+
 export const userWithIdExists = async (userId: string) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new BadRequestError("Invalid user ID format");
@@ -14,7 +15,7 @@ export const userWithIdExists = async (userId: string) => {
 
 export const validateUserRegistration = async (
   username: string,
-  email: string
+  email: string,
 ) => {
   const existingUserByUsername = await User.findOne({
     username: new RegExp(`^${username}$`, "i"),
@@ -29,4 +30,14 @@ export const validateUserRegistration = async (
     throw new BadRequestError("Email is already in use");
   }
   return true;
+};
+
+export const getUserByName = async (username: string) => {
+  const user = await User.findOne({
+    username: new RegExp(`^${username}$`, "i"),
+  });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+  return user;
 };

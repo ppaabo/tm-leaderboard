@@ -1,8 +1,13 @@
 import { NotFoundError } from "./api-errors.js";
 
+/**
+ * returns filtered object containing only allowed keys from the query (w/ non-empty values).
+ * @param query - request query parameters object
+ * @param allowedKeys - array of keys to include in result
+ */
 export const buildFilter = <T extends string>(
   query: Partial<Record<T, string>>,
-  allowedKeys: readonly T[] = []
+  allowedKeys: readonly T[] = [],
 ): Partial<Record<T, string>> => {
   const filter: Partial<Record<T, string>> = {};
 
@@ -19,7 +24,7 @@ export const buildFilter = <T extends string>(
 export const validateExists = async (
   Model: any,
   field: string,
-  value: string
+  value: string,
 ) => {
   if (!value) return;
   const exists = await Model.findOne({ id: value });

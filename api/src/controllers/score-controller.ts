@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Score from "../models/score.js";
-import { userWithIdExists } from "../utils/user-utils.js";
+import { getUserByName, userWithIdExists } from "../utils/user-utils.js";
 import User from "../models/user.js";
 import { ForbiddenError, NotFoundError } from "../utils/api-errors.js";
 import { Gamemode, Map } from "../models/score-metadata.js";
@@ -60,30 +60,28 @@ class ScoreController {
     res.status(outcome === "created" ? 201 : 200).json(response);
   }
 
-  async getScoresByUsername(req: Request, res: Response) {
-    const username = req.params.username;
-    const user = await User.findOne({
-      username: new RegExp(`^${username}$`, "i"),
-    });
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
-    const scores = await Score.find({ user: user._id })
-      .sort({ timestamp: -1 })
-      .populate("user", "username");
-
-    res.json({ status: "success", data: scores });
-  }
-
   async queryScores(req: Request, res: Response) {
-    const filter = buildFilter(req.query, ["gamemode", "map"]);
+    // fck typescript...:DDDDDDDDDDDDDDDDDD
+    const filter = buildFilter(req.query as Record<string, any>, [
+      "gamemode",
+      "map",
+      "username",
+    ]) as Record<string, any>;
     await validateExists(Gamemode, "Gamemode", filter.gamemode as string);
     await validateExists(Map, "Map", filter.map as string);
+
+    // get user's objectId for filter
+    if (filter.username) {
+      const user = await getUserByName(filter.username);
+      filter.user = user._id.toString();
+      delete filter.username;
+    }
 
     let sortDirection: string | undefined;
     if (filter.gamemode && filter.map) {
       sortDirection = filter.gamemode === "time-trial" ? "score" : "-score";
+    } else if (filter.user) {
+      sortDirection = "-timestamp";
     }
 
     const scores = await Score.find(filter)
