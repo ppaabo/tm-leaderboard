@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { LeaderboardEntryData } from "@/types";
+import { type LeaderboardEntryData, DeleteOwnScoreStatus } from "@/types";
 import type { ScorePayload, SubmitScoreResponse } from "shared";
 import { useNotification } from "@kyvg/vue3-notification";
 import { useCategoryStore } from "@/stores/category-store";
@@ -35,7 +35,9 @@ export const useScoreStore = defineStore("score", () => {
     }
   }
 
-  async function deleteOwnScore(scoreId: string): Promise<boolean> {
+  async function deleteOwnScore(
+    scoreId: string,
+  ): Promise<DeleteOwnScoreStatus> {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/scores/${scoreId}`,
@@ -47,15 +49,15 @@ export const useScoreStore = defineStore("score", () => {
 
       if (response.ok) {
         notify({ type: "success", title: "Score deleted" });
-        return true;
+        return DeleteOwnScoreStatus.Deleted;
       }
       if (response.status === 404) {
         notify({ type: "error", title: "Score not found" });
-        return false;
+        return DeleteOwnScoreStatus.NotFound;
       }
       if (response.status === 403) {
         notify({ type: "error", title: "Forbidden" });
-        return false;
+        return DeleteOwnScoreStatus.Forbidden;
       }
       throw new Error(`Unexpected error. Response status: ${response.status}`);
     } catch (error) {
@@ -65,7 +67,7 @@ export const useScoreStore = defineStore("score", () => {
         title: "Unexpected error",
         text: "Deleting score failed",
       });
-      return false;
+      return DeleteOwnScoreStatus.Error;
     }
   }
 

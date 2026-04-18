@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { watch, ref, computed } from "vue";
-import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
+import {
+  type LeaderboardEntryData,
+  type LeaderboardEntryDisplay,
+  DeleteOwnScoreStatus,
+} from "@/types";
 import UserScores from "./UserScores.vue";
 import { formatTimeTrialScore } from "@/utils/score-format";
 import { useScoreStore } from "@/stores/score-store";
@@ -18,31 +22,30 @@ const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
-watch(
-  () => props.username,
-  async () => {
-    isLoading.value = true;
-    await categoryStore.fetchCategories();
-    const data: LeaderboardEntryData[] | null =
-      await scoreStore.getScoresByUser(props.username);
-    if (data === null) {
-      userNotFound.value = true;
-      router.push("/");
-    } else {
-      userScores.value = data.map((entry) => ({
-        ...entry,
-        rawScore: entry.score,
-        score:
-          entry.gamemode === "time-trial"
-            ? formatTimeTrialScore(entry.score)
-            : entry.score.toLocaleString("en-US"),
-      }));
-      userNotFound.value = false;
-    }
-    isLoading.value = false;
-  },
-  { immediate: true },
-);
+const fetchUserScores = async () => {
+  isLoading.value = true;
+  await categoryStore.fetchCategories();
+  const data: LeaderboardEntryData[] | null = await scoreStore.getScoresByUser(
+    props.username,
+  );
+  if (data === null) {
+    userNotFound.value = true;
+    router.push("/");
+  } else {
+    userScores.value = data.map((entry) => ({
+      ...entry,
+      rawScore: entry.score,
+      score:
+        entry.gamemode === "time-trial"
+          ? formatTimeTrialScore(entry.score)
+          : entry.score.toLocaleString("en-US"),
+    }));
+    userNotFound.value = false;
+  }
+  isLoading.value = false;
+};
+
+watch(() => props.username, fetchUserScores, { immediate: true });
 
 const formattedUsername = computed(() => {
   return userScores.value.length > 0
@@ -60,8 +63,14 @@ const handleScoreClick = (item: { gamemode: string; map: string }) => {
   });
 };
 
-const handleDeleteScore = (scoreId: string) => {
-  console.log("Score to delete: ", scoreId);
+const handleDeleteScore = async (scoreId: string) => {
+  const result = await scoreStore.deleteOwnScore(scoreId);
+  switch (result) {
+    case DeleteOwnScoreStatus.Deleted:
+    case DeleteOwnScoreStatus.NotFound:
+      await fetchUserScores();
+      break;
+  }
 };
 
 const isOwnProfile = computed(() => {
