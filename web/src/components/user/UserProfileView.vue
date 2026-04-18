@@ -60,6 +60,10 @@ const handleScoreClick = (item: { gamemode: string; map: string }) => {
   });
 };
 
+const handleDeleteScore = (scoreId: string) => {
+  console.log("Score to delete: ", scoreId);
+};
+
 const isOwnProfile = computed(() => {
   return authStore.currentUser?.username === props.username;
 });
@@ -71,6 +75,11 @@ const isOwnProfile = computed(() => {
   <template v-else>
     <h1>{{ formattedUsername }}'s Profile</h1>
     <hr />
-    <UserScores :userScores="userScores" @select="handleScoreClick" />
+    <UserScores
+      :userScores="userScores"
+      :canDelete="isOwnProfile"
+      @select="handleScoreClick"
+      @delete="handleDeleteScore"
+    />
   </template>
 </template>
