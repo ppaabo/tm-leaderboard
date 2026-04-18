@@ -60,22 +60,6 @@ class ScoreController {
     res.status(outcome === "created" ? 201 : 200).json(response);
   }
 
-  async getScoresByUsername(req: Request, res: Response) {
-    const username = req.params.username;
-    const user = await User.findOne({
-      username: new RegExp(`^${username}$`, "i"),
-    });
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
-    const scores = await Score.find({ user: user._id })
-      .sort({ timestamp: -1 })
-      .populate("user", "username");
-
-    res.json({ status: "success", data: scores });
-  }
-
   async queryScores(req: Request, res: Response) {
     // fck typescript...:DDDDDDDDDDDDDDDDDD
     const filter = buildFilter(req.query as Record<string, any>, [

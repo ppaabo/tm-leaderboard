@@ -75,18 +75,21 @@ export const useScoreStore = defineStore("score", () => {
     username: string,
   ): Promise<LeaderboardEntryData[] | null> {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/scores/user/${username}`,
-      );
+      const base = `${import.meta.env.VITE_API_URL}/scores`;
+      const url = base.startsWith("/") // handle relative url (vite proxy)
+        ? new URL(base, window.location.origin)
+        : new URL(base);
+      url.searchParams.set("username", username);
+
+      const response = await fetch(url);
       if (response.ok) {
-        const data = (await response.json()).data;
+        const data: LeaderboardEntryData[] = (await response.json()).data;
         return data;
       }
       if (response.status === 404) {
         notify({
           type: "error",
           title: "User Not Found",
-          text: `User "${username}" does not exist`,
         });
         return null;
       }
