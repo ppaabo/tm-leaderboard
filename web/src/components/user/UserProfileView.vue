@@ -22,6 +22,10 @@ const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
+const isDeletingScore = ref(false);
+// controls whether dialog is shown
+const pendingDeleteScoreId = ref<string | null>(null);
+
 const fetchUserScores = async () => {
   isLoading.value = true;
   await categoryStore.fetchCategories();
@@ -64,12 +68,28 @@ const handleScoreClick = (item: { gamemode: string; map: string }) => {
 };
 
 const handleDeleteScore = async (scoreId: string) => {
-  const result = await scoreStore.deleteOwnScore(scoreId);
-  switch (result) {
-    case DeleteOwnScoreStatus.Deleted:
-    case DeleteOwnScoreStatus.NotFound:
-      await fetchUserScores();
-      break;
+  pendingDeleteScoreId.value = scoreId;
+};
+
+const cancelDeleteScore = () => {
+  pendingDeleteScoreId.value = null;
+};
+
+const confirmDeleteScore = async () => {
+  if (!pendingDeleteScoreId.value) return;
+
+  isDeletingScore.value = true;
+  try {
+    const result = await scoreStore.deleteOwnScore(pendingDeleteScoreId.value);
+    switch (result) {
+      case DeleteOwnScoreStatus.Deleted:
+      case DeleteOwnScoreStatus.NotFound:
+        await fetchUserScores();
+        break;
+    }
+  } finally {
+    isDeletingScore.value = false;
+    pendingDeleteScoreId.value = null;
   }
 };
 
@@ -90,5 +110,33 @@ const isOwnProfile = computed(() => {
       @select="handleScoreClick"
       @delete="handleDeleteScore"
     />
+    <dialog :open="pendingDeleteScoreId !== null">
+      <article>
+        <header>
+          <h2>Confirm Score Deletion</h2>
+        </header>
+        <p>
+          Are you sure you want to delete this score? This action cannot be
+          undone.
+        </p>
+        <LoadingIndicator
+          v-if="isDeletingScore"
+          inline
+          message="Deleting score..."
+        />
+        <footer>
+          <button
+            class="secondary"
+            @click="cancelDeleteScore"
+            :disabled="isDeletingScore"
+          >
+            Cancel
+          </button>
+          <button @click="confirmDeleteScore" :disabled="isDeletingScore">
+            Confirm
+          </button>
+        </footer>
+      </article>
+    </dialog>
   </template>
 </template>
