@@ -6,20 +6,21 @@ const router = Router();
 
 // router.get("/:id", userController.getUserProfile);
 router.delete("/me", requireAuth, userController.deleteOwnAccount);
+router.get("/:username/scores", userController.getUserScoresWithPlacement);
 
 // Admin routes
 router.get(
   "/",
   requireAuth,
   requireRole(["admin"]),
-  userController.getAllUsers
+  userController.getAllUsers,
 );
 
 router.delete(
   "/:id",
   requireAuth,
   requireRole(["admin"]),
-  userController.deleteUserAccount
+  userController.deleteUserAccount,
 );
 
 export default router;
