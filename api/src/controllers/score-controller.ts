@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
-import Score from "../models/score.js";
-import { getUserByName, userWithIdExists } from "../utils/user-utils.js";
-import User from "../models/user.js";
-import { ForbiddenError, NotFoundError } from "../utils/api-errors.js";
-import { Gamemode, Map } from "../models/score-metadata.js";
-import { buildFilter, validateExists } from "../utils/score-utils.js";
 import type {
   ScorePayload,
-  SubmitScoreResponse,
-  SubmitScoreOutcome,
   ScoreResponseData,
+  SubmitScoreOutcome,
+  SubmitScoreResponse,
 } from "shared";
+import { Gamemode, Map } from "../models/score-metadata.js";
+import Score from "../models/score.js";
+import { ForbiddenError, NotFoundError } from "../utils/api-errors.js";
+import { buildFilter, validateExists } from "../utils/score-utils.js";
+import { getUserByName, userWithIdExists } from "../utils/user-utils.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {

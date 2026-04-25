@@ -1,8 +1,12 @@
-import { defineStore } from "pinia";
-import { type LeaderboardEntryData, DeleteOwnScoreStatus } from "@/types";
-import type { ScorePayload, SubmitScoreResponse } from "shared";
-import { useNotification } from "@kyvg/vue3-notification";
 import { useCategoryStore } from "@/stores/category-store";
+import {
+  type LeaderboardEntryData,
+  type LeaderboardEntryDataPlacement,
+  DeleteOwnScoreStatus,
+} from "@/types";
+import { useNotification } from "@kyvg/vue3-notification";
+import { defineStore } from "pinia";
+import type { ScorePayload, SubmitScoreResponse } from "shared";
 
 export const useScoreStore = defineStore("score", () => {
   const { notify } = useNotification();
@@ -73,17 +77,13 @@ export const useScoreStore = defineStore("score", () => {
 
   async function getScoresByUser(
     username: string,
-  ): Promise<LeaderboardEntryData[] | null> {
+  ): Promise<LeaderboardEntryDataPlacement[] | null> {
     try {
-      const base = `${import.meta.env.VITE_API_URL}/scores`;
-      const url = base.startsWith("/") // handle relative url (vite proxy)
-        ? new URL(base, window.location.origin)
-        : new URL(base);
-      url.searchParams.set("username", username);
-
+      const url = `${import.meta.env.VITE_API_URL}/users/${username}/scores`;
       const response = await fetch(url);
       if (response.ok) {
-        const data: LeaderboardEntryData[] = (await response.json()).data;
+        const data: LeaderboardEntryDataPlacement[] = (await response.json())
+          .data;
         return data;
       }
       if (response.status === 404) {

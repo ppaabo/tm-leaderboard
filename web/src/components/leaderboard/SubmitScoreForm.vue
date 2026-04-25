@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch } from "vue";
-import { validateScore } from "@/utils/score-format";
+import { validateScore } from "@/utils/score-utils";
 import type { ScoreValidationState } from "@/types";
 
 const props = defineProps<{
@@ -12,7 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (
     e: "submit",
-    payload: { gamemode: string; map: string; score: number }
+    payload: { gamemode: string; map: string; score: number },
   ): void;
 }>();
 
@@ -24,13 +24,13 @@ const hasSubmitted = ref(false);
 const scoreLabel = computed(() =>
   selectedGamemode.value === "time-trial"
     ? "Input time (mm:ss:ms)"
-    : "Input score"
+    : "Input score",
 );
 const scorePlaceholder = computed(() =>
-  selectedGamemode.value === "time-trial" ? "mm:ss.ms" : "Score"
+  selectedGamemode.value === "time-trial" ? "mm:ss.ms" : "Score",
 );
 const scoreType = computed(() =>
-  selectedGamemode.value === "time-trial" ? "text" : "number"
+  selectedGamemode.value === "time-trial" ? "text" : "number",
 );
 const validation = reactive<ScoreValidationState>({
   score: undefined,
@@ -39,7 +39,7 @@ const validation = reactive<ScoreValidationState>({
 const validateCurrentScore = (): number | null => {
   const result = validateScore(
     inputScore.value,
-    scoreType.value as "text" | "number"
+    scoreType.value as "text" | "number",
   );
   validation.score = !result.isValid;
   return result.value;
@@ -74,7 +74,7 @@ watch(
     inputScore.value = "";
     hasSubmitted.value = false;
     validation.score = undefined;
-  }
+  },
 );
 </script>
 

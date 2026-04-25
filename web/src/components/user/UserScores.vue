@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/category-store";
-import type { LeaderboardEntryDisplay } from "@/types";
+import type { LeaderboardEntryDisplayPlacement } from "@/types";
 import { computed } from "vue";
 
 const categoryStore = useCategoryStore();
 const props = defineProps<{
-  userScores: LeaderboardEntryDisplay[];
+  userScores: LeaderboardEntryDisplayPlacement[];
   canDelete: boolean;
 }>();
 
@@ -15,7 +15,7 @@ defineEmits<{
 }>();
 
 const scoresByGamemode = computed(() => {
-  const groups: Record<string, LeaderboardEntryDisplay[]> = {};
+  const groups: Record<string, LeaderboardEntryDisplayPlacement[]> = {};
   // Group by gamemode
   props.userScores.forEach((score) => {
     if (!groups[score.gamemode]) {
@@ -23,12 +23,10 @@ const scoresByGamemode = computed(() => {
     }
     groups[score.gamemode].push(score);
   });
-  // Sort by map name
+  // Sort by placement
   Object.keys(groups).forEach((gamemode) => {
     groups[gamemode].sort((a, b) => {
-      const mapNameA = getMapName(a.map).toLowerCase();
-      const mapNameB = getMapName(b.map).toLowerCase();
-      return mapNameA.localeCompare(mapNameB);
+      return a.placement - b.placement;
     });
   });
   return groups;
@@ -37,7 +35,15 @@ const scoresByGamemode = computed(() => {
 const getGamemodeName = (id: string) =>
   categoryStore.getGamemodeById(id)?.name || id;
 const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
+
+const getPlacementText = (placement: number): string => {
+  if (placement === 1) return "🥇";
+  if (placement === 2) return "🥈";
+  if (placement === 3) return "🥉";
+  return placement.toString();
+};
 </script>
+
 <template>
   <p v-if="userScores.length === 0">No scores found for the user</p>
   <section
@@ -50,6 +56,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
     <table class="striped">
       <thead>
         <tr>
+          <th>Placement</th>
           <th>Map</th>
           <th>Score</th>
           <th>Date</th>
@@ -66,6 +73,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
             entry.gamemode,
           )} on ${getMapName(entry.map)}`"
         >
+          <td>{{ getPlacementText(entry.placement) }}</td>
           <td>{{ getMapName(entry.map) }}</td>
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
