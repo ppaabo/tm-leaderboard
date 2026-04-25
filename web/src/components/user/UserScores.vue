@@ -23,12 +23,10 @@ const scoresByGamemode = computed(() => {
     }
     groups[score.gamemode].push(score);
   });
-  // Sort by map name
+  // Sort by placement
   Object.keys(groups).forEach((gamemode) => {
     groups[gamemode].sort((a, b) => {
-      const mapNameA = getMapName(a.map).toLowerCase();
-      const mapNameB = getMapName(b.map).toLowerCase();
-      return mapNameA.localeCompare(mapNameB);
+      return a.placement - b.placement;
     });
   });
   return groups;
