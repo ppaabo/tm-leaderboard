@@ -40,7 +40,7 @@ export function parseTimeTrialScore(timeStr: string): number {
 
 export function validateScore(
   input: string,
-  type: "text" | "number"
+  type: "text" | "number",
 ): ScoreValidationResult {
   if (!input) {
     return { isValid: false, value: null };

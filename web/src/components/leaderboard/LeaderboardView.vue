@@ -4,7 +4,7 @@ import { useScoreStore } from "@/stores/score-store";
 import { useRouter } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
-import { formatTimeTrialScore } from "@/utils/score-format";
+import { formatTimeTrialScore } from "@/utils/score-utils";
 import LeaderboardTable from "./LeaderboardTable.vue";
 import LoadingIndicator from "../LoadingIndicator.vue";
 
@@ -19,7 +19,7 @@ onMounted(async () => {
   await categoryStore.fetchCategories();
   const data: LeaderboardEntryData[] | null = await scoreStore.getLeaderboard(
     props.gamemode,
-    props.map
+    props.map,
   );
   if (data === null) {
     router.push("/leaderboard");
@@ -42,7 +42,7 @@ onMounted(async () => {
 });
 
 const gamemodeObj = computed(() =>
-  categoryStore.getGamemodeById(props.gamemode)
+  categoryStore.getGamemodeById(props.gamemode),
 );
 const mapObj = computed(() => categoryStore.getMapById(props.map));
 

@@ -37,7 +37,15 @@ const scoresByGamemode = computed(() => {
 const getGamemodeName = (id: string) =>
   categoryStore.getGamemodeById(id)?.name || id;
 const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
+
+const getPlacementText = (placement: number): string => {
+  if (placement === 1) return "🥇";
+  if (placement === 2) return "🥈";
+  if (placement === 3) return "🥉";
+  return placement.toString();
+};
 </script>
+
 <template>
   <p v-if="userScores.length === 0">No scores found for the user</p>
   <section
@@ -67,7 +75,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
             entry.gamemode,
           )} on ${getMapName(entry.map)}`"
         >
-          <td>{{ entry.placement }}</td>
+          <td>{{ getPlacementText(entry.placement) }}</td>
           <td>{{ getMapName(entry.map) }}</td>
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>

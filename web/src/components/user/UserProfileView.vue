@@ -6,7 +6,7 @@ import {
   DeleteOwnScoreStatus,
 } from "@/types";
 import UserScores from "./UserScores.vue";
-import { formatTimeTrialScore } from "@/utils/score-format";
+import { formatTimeTrialScore } from "@/utils/score-utils";
 import { useScoreStore } from "@/stores/score-store";
 import { useCategoryStore } from "@/stores/category-store";
 import { useAuthStore } from "@/stores/auth-store";
