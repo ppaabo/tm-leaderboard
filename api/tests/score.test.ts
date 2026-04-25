@@ -124,7 +124,7 @@ describe("GET /api/scores", () => {
   });
 });
 
-describe("GET /api/scores/user/:username", () => {
+describe("GET /api/users/:username/scores", () => {
   beforeAll(async () => {
     await User.deleteMany({});
     await Score.deleteMany({});
@@ -134,11 +134,11 @@ describe("GET /api/scores/user/:username", () => {
 
   users.forEach((user) => {
     it(`should return correct scores for user ${user.username}`, async () => {
-      const res = await request(app).get(`/api/scores/user/${user.username}`);
+      const res = await request(app).get(`/api/users/${user.username}/scores`);
       expect(res.status).toBe(200);
       // Get user scores from test data
       const expectedScores = scores.filter(
-        (s) => s.user.toString() === user._id.toString()
+        (s) => s.user.toString() === user._id.toString(),
       );
       expect(res.body.data).toHaveLength(expectedScores.length);
       // Check that response contains all the expected scores for user
@@ -149,7 +149,7 @@ describe("GET /api/scores/user/:username", () => {
             map: expectedScore.map,
             score: expectedScore.score,
             user: expect.objectContaining({ username: user.username }),
-          })
+          }),
         );
       });
     });
