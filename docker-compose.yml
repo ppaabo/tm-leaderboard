@@ -15,6 +15,9 @@ services:
         - action: sync
           path: ./api/src
           target: /app/src
+          initial_sync: true
+        - action: rebuild
+          path: ./api/package.json
   web:
     container_name: leaderboard-client
     build:
@@ -32,12 +35,15 @@ services:
           ignore:
             - stores/
             - router.ts
+          initial_sync: true
         - action: sync+restart
           path: ./web/src/router.ts
           target: ./web/src/router.ts
+          initial_sync: true
         - action: sync+restart
           path: ./web/src/stores
           target: /app/src/stores
+          initial_sync: true
         - action: rebuild
           path: ./web/package.json
   mongodb:
