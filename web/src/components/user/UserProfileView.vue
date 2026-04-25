@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { watch, ref, computed } from "vue";
 import {
-  type LeaderboardEntryData,
-  type LeaderboardEntryDisplay,
+  type LeaderboardEntryDataPlacement,
+  type LeaderboardEntryDisplayPlacement,
   DeleteOwnScoreStatus,
 } from "@/types";
 import UserScores from "./UserScores.vue";
@@ -14,7 +14,7 @@ import { useRouter } from "vue-router";
 import LoadingIndicator from "../LoadingIndicator.vue";
 
 const props = defineProps<{ username: string }>();
-const userScores = ref<LeaderboardEntryDisplay[]>([]);
+const userScores = ref<LeaderboardEntryDisplayPlacement[]>([]);
 const userNotFound = ref(false);
 const isLoading = ref(true);
 const scoreStore = useScoreStore();
@@ -29,9 +29,8 @@ const pendingDeleteScoreId = ref<string | null>(null);
 const fetchUserScores = async () => {
   isLoading.value = true;
   await categoryStore.fetchCategories();
-  const data: LeaderboardEntryData[] | null = await scoreStore.getScoresByUser(
-    props.username,
-  );
+  const data: LeaderboardEntryDataPlacement[] | null =
+    await scoreStore.getScoresByUser(props.username);
   if (data === null) {
     userNotFound.value = true;
     router.push("/");

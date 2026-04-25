@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/category-store";
-import type { LeaderboardEntryDisplay } from "@/types";
+import type { LeaderboardEntryDisplayPlacement } from "@/types";
 import { computed } from "vue";
 
 const categoryStore = useCategoryStore();
 const props = defineProps<{
-  userScores: LeaderboardEntryDisplay[];
+  userScores: LeaderboardEntryDisplayPlacement[];
   canDelete: boolean;
 }>();
 
@@ -15,7 +15,7 @@ defineEmits<{
 }>();
 
 const scoresByGamemode = computed(() => {
-  const groups: Record<string, LeaderboardEntryDisplay[]> = {};
+  const groups: Record<string, LeaderboardEntryDisplayPlacement[]> = {};
   // Group by gamemode
   props.userScores.forEach((score) => {
     if (!groups[score.gamemode]) {
@@ -50,6 +50,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
     <table class="striped">
       <thead>
         <tr>
+          <th>Placement</th>
           <th>Map</th>
           <th>Score</th>
           <th>Date</th>
@@ -66,6 +67,7 @@ const getMapName = (id: string) => categoryStore.getMapById(id)?.name || id;
             entry.gamemode,
           )} on ${getMapName(entry.map)}`"
         >
+          <td>{{ entry.placement }}</td>
           <td>{{ getMapName(entry.map) }}</td>
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
