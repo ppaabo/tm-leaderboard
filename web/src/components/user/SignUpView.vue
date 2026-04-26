@@ -3,7 +3,9 @@ import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
 import type { SignUpValidationState } from "@/types";
 import type { RegisterPayload } from "shared";
+import { signUpSchema } from "@/types";
 import { useRouter } from "vue-router";
+import { z } from "zod";
 
 const authStore = useAuthStore();
 const usernameInput = ref("");
@@ -13,6 +15,19 @@ const passwordConfirmInput = ref("");
 const hasSubmitted = ref(false);
 const router = useRouter();
 
+const signUpWithConfirmSchema = signUpSchema
+  .extend({
+    passwordConfirm: z.string(),
+  })
+  .refine(
+    (data: { password: string; passwordConfirm: string }) =>
+      data.password === data.passwordConfirm,
+    {
+      message: "Passwords do not match",
+      path: ["passwordConfirm"],
+    },
+  );
+
 // Basic validation stuff for displaying validation states
 // field: false = value is valid (aria-invalid=false)
 const validation = reactive<SignUpValidationState>({
@@ -21,67 +36,51 @@ const validation = reactive<SignUpValidationState>({
   password: undefined,
   passwordConfirm: undefined,
 });
-const validateUsername = () => {
-  const value = usernameInput.value.trim();
-  validation.username = value.length >= 4 ? false : true;
-};
-const validateEmail = () => {
-  const value = emailInput.value.trim();
-  validation.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? false : true;
-};
-const validatePassword = () => {
-  const value = passwordInput.value;
-  validation.password = value.length >= 6 ? false : true;
-};
-const validatePasswordConfirm = () => {
-  const pass = passwordInput.value;
-  const confirm = passwordConfirmInput.value;
-  if (pass.length < 6 || confirm.length === 0) {
-    validation.passwordConfirm = true;
-  } else {
-    validation.passwordConfirm = pass === confirm ? false : true;
+
+const validateForm = () => {
+  // reset validation state
+  validation.username = false;
+  validation.email = false;
+  validation.password = false;
+  validation.passwordConfirm = false;
+
+  const result = signUpWithConfirmSchema.safeParse({
+    username: usernameInput.value,
+    email: emailInput.value,
+    password: passwordInput.value,
+    passwordConfirm: passwordConfirmInput.value,
+  });
+
+  if (!result.success) {
+    result.error.issues.forEach((err) => {
+      if (err.path.includes("username")) validation.username = true;
+      if (err.path.includes("email")) validation.email = true;
+      if (err.path.includes("password") && err.path.length === 1)
+        validation.password = true;
+      if (err.path.includes("passwordConfirm"))
+        validation.passwordConfirm = true;
+    });
+    return false;
   }
+  return true;
 };
 
 const handleSubmit = async () => {
-  // Show validation states after user submits for the first time
   hasSubmitted.value = true;
-  validateUsername();
-  validateEmail();
-  validatePassword();
-  validatePasswordConfirm();
-  if (
-    !validation.username &&
-    !validation.email &&
-    !validation.password &&
-    !validation.passwordConfirm
-  ) {
-    const user: RegisterPayload = {
-      username: usernameInput.value,
-      email: emailInput.value,
-      password: passwordInput.value,
-    };
-    const success = await authStore.signUpUser(user);
-    if (success) {
-      router.push({ name: "home" });
-    }
+  if (!validateForm()) return;
+
+  const user: RegisterPayload = {
+    username: usernameInput.value,
+    email: emailInput.value,
+    password: passwordInput.value,
+  };
+  const success = await authStore.signUpUser(user);
+  if (success) {
+    router.push({ name: "home" });
   }
 };
-
-watch(usernameInput, () => {
-  if (hasSubmitted.value) validateUsername();
-});
-watch(emailInput, () => {
-  if (hasSubmitted.value) validateEmail();
-});
-watch(passwordInput, () => {
-  if (hasSubmitted.value) {
-    validatePassword();
-    validatePasswordConfirm();
-  }
-});
-watch(passwordConfirmInput, () => {
-  if (hasSubmitted.value) validatePasswordConfirm();
+watch([usernameInput, emailInput, passwordInput, passwordConfirmInput], () => {
+  if (hasSubmitted.value) validateForm();
 });
 </script>
 
@@ -133,7 +132,7 @@ watch(passwordConfirmInput, () => {
             aria-describedby="password-helper"
           />
           <small v-if="validation.password" id="password-helper">
-            Password must be at least 6 characters
+            Password must be at least 8 characters
           </small>
         </label>
         <label>
