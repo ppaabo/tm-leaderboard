@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch } from "vue";
-import { validateScore } from "@/utils/score-utils";
-import type { ScoreValidationState } from "@/types";
+import { submitScoreSchema } from "@/types";
+import { timeTrialToMs } from "@/utils/score-utils";
 
 const props = defineProps<{
   gamemodes: any[];
@@ -32,21 +32,44 @@ const scorePlaceholder = computed(() =>
 const scoreType = computed(() =>
   selectedGamemode.value === "time-trial" ? "text" : "number",
 );
-const validation = reactive<ScoreValidationState>({
+
+const validation = reactive<{
+  score: boolean | undefined;
+  scoreError?: string;
+}>({
   score: undefined,
+  scoreError: "",
 });
 
 const validateCurrentScore = (): number | null => {
-  const result = validateScore(
-    inputScore.value,
-    scoreType.value as "text" | "number",
-  );
-  validation.score = !result.isValid;
-  return result.value;
+  validation.score = false;
+  validation.scoreError = "";
+  if (!inputScore.value) {
+    return null;
+  }
+  const result = submitScoreSchema.safeParse({
+    gamemode: selectedGamemode.value,
+    map: selectedMap.value,
+    score: inputScore.value,
+  });
+
+  if (!result.success) {
+    const scoreIssue = result.error.issues.find((issue) =>
+      issue.path.includes("score"),
+    );
+    if (scoreIssue) {
+      validation.score = true;
+      validation.scoreError = scoreIssue.message;
+    }
+    return null;
+  }
+  if (selectedGamemode.value === "time-trial") {
+    return timeTrialToMs(inputScore.value);
+  }
+  return Number(inputScore.value);
 };
 
 const handleSubmit = async () => {
-  hasSubmitted.value = true;
   const formattedScore = validateCurrentScore();
   if (validation.score || formattedScore === null) return;
   emit("submit", {
@@ -56,14 +79,13 @@ const handleSubmit = async () => {
   });
 };
 
-watch(inputScore, () => {
-  if (hasSubmitted.value) validateCurrentScore();
+watch([inputScore, selectedGamemode, selectedMap], () => {
+  validation.score = undefined;
+  validation.scoreError = "";
 });
 
 watch(selectedGamemode, () => {
   inputScore.value = "";
-  validation.score = undefined;
-  hasSubmitted.value = false;
 });
 
 watch(
@@ -74,6 +96,7 @@ watch(
     inputScore.value = "";
     hasSubmitted.value = false;
     validation.score = undefined;
+    validation.scoreError = "";
   },
 );
 </script>
@@ -112,11 +135,7 @@ watch(
           aria-describedby="score-helper"
         />
         <small v-if="validation.score" id="score-helper">
-          {{
-            scoreType === "text"
-              ? "Format must be mm.ss.ms (e.g. 01:30.50)"
-              : "Score must be a valid number"
-          }}
+          {{ validation.scoreError }}
         </small>
       </label>
     </fieldset>
