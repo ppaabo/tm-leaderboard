@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import { z } from "zod";
 
 export interface IScore extends Document {
   user: Types.ObjectId;
@@ -17,3 +18,9 @@ export interface IMap extends Document {
   id: string;
   name: string;
 }
+
+export const ScorePayloadSchema = z.object({
+  gamemode: z.string(),
+  map: z.string().min(1),
+  score: z.number().min(1),
+});
