@@ -10,6 +10,8 @@ services:
       - mongodb
     env_file:
       - ./api/.env
+    volumes:
+      - ./shared:/shared
     develop:
       watch:
         - action: sync
@@ -27,6 +29,8 @@ services:
       - "5173:5173"
     env_file:
       - ./web/.env
+    volumes:
+      - ./shared:/shared
     develop:
       watch:
         - action: sync

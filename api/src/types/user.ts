@@ -9,7 +9,7 @@ export interface IUser extends Document {
   accountType: "user" | "admin";
 }
 
-export const signUpSchema = z.object({
+export const signUpSchema = z.strictObject({
   username: z
     .string()
     .min(4, { error: "must be at least 4 characters" })
@@ -17,3 +17,5 @@ export const signUpSchema = z.object({
   email: z.email({ error: "Invalid email address" }),
   password: z.string().min(8, { error: "must be at least 8 characters" }),
 });
+
+export const logInSchema = signUpSchema.omit({ email: true });

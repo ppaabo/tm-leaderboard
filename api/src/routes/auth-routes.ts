@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { signUpSchema } from "src/types/user.js";
+import { logInSchema, signUpSchema } from "src/types/user.js";
 import authController from "../controllers/auth-controller.js";
 import { requireAuth } from "../middleware/auth-middleware.js";
 import { validateBodyWithSchema } from "../middleware/validate-body.js";
@@ -11,7 +11,12 @@ router.post(
   validateBodyWithSchema(signUpSchema),
   authController.createUser,
 );
-router.post("/login", passport.authenticate("local"), authController.loginUser);
+router.post(
+  "/login",
+  validateBodyWithSchema(logInSchema),
+  passport.authenticate("local"),
+  authController.loginUser,
+);
 router.post("/logout", requireAuth, authController.logoutUser);
 router.get("/me", requireAuth, authController.getMe);
 

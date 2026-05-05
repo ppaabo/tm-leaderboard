@@ -11,7 +11,7 @@ export const DeleteOwnScoreStatus = {
 export type DeleteOwnScoreStatus =
   (typeof DeleteOwnScoreStatus)[keyof typeof DeleteOwnScoreStatus];
 
-const timeTrialSchema = z.object({
+const timeTrialSchema = z.strictObject({
   gamemode: z.literal("time-trial"),
   map: z.string().min(1, { error: "Map is required" }),
   score: z
@@ -20,7 +20,7 @@ const timeTrialSchema = z.object({
     .refine(isValidTimeTrialScore, { error: "Invalid time value" }),
 });
 
-const freestyleSchema = z.object({
+const freestyleSchema = z.strictObject({
   gamemode: z.literal("freestyle"),
   map: z.string().min(1, { error: "Map is required" }),
   score: z.number().min(0, { error: "Score must be a positive number" }),
