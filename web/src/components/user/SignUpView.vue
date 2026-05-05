@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
 import type { SignUpValidationState } from "@/types";
-import type { RegisterPayload } from "shared";
 import { signUpSchema } from "@/types";
+import type { RegisterPayload } from "shared";
+import { reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { z } from "zod";
 
 const authStore = useAuthStore();
 const usernameInput = ref("");
@@ -14,19 +13,6 @@ const passwordInput = ref("");
 const passwordConfirmInput = ref("");
 const hasSubmitted = ref(false);
 const router = useRouter();
-
-const signUpWithConfirmSchema = signUpSchema
-  .extend({
-    passwordConfirm: z.string(),
-  })
-  .refine(
-    (data: { password: string; passwordConfirm: string }) =>
-      data.password === data.passwordConfirm,
-    {
-      message: "Passwords do not match",
-      path: ["passwordConfirm"],
-    },
-  );
 
 // Basic validation stuff for displaying validation states
 // field: false = value is valid (aria-invalid=false)
@@ -44,7 +30,7 @@ const validateForm = () => {
   validation.password = false;
   validation.passwordConfirm = false;
 
-  const result = signUpWithConfirmSchema.safeParse({
+  const result = signUpSchema.safeParse({
     username: usernameInput.value,
     email: emailInput.value,
     password: passwordInput.value,

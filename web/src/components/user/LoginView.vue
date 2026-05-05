@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth-store";
-import type { LoginValidationState } from "@/types";
+import { logInSchema, type LoginValidationState } from "@/types";
 import type { LoginPayload } from "shared";
+import { reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
@@ -14,36 +14,41 @@ const validation = reactive<LoginValidationState>({
   username: undefined,
   password: undefined,
 });
-const validateUsername = () => {
-  const value = usernameInput.value.trim();
-  validation.username = value.length >= 4 ? false : true;
-};
-const validatePassword = () => {
-  const value = passwordInput.value;
-  validation.password = value.length > 0 ? false : true;
+
+const validateForm = () => {
+  validation.username = false;
+  validation.password = false;
+
+  const result = logInSchema.safeParse({
+    username: usernameInput.value,
+    password: passwordInput.value,
+  });
+
+  if (!result.success) {
+    result.error.issues.forEach((err) => {
+      if (err.path.includes("username")) validation.username = true;
+      if (err.path.includes("password")) validation.password = true;
+    });
+    return false;
+  }
+  return true;
 };
 
 const handleSubmit = async () => {
   hasSubmitted.value = true;
-  validateUsername();
-  validatePassword();
-  if (!validation.username && !validation.password) {
-    const user: LoginPayload = {
-      username: usernameInput.value,
-      password: passwordInput.value,
-    };
-    const success = await authStore.loginUser(user);
-    if (success) {
-      router.push({ name: "home" });
-    }
+  if (!validateForm()) return;
+  const user: LoginPayload = {
+    username: usernameInput.value,
+    password: passwordInput.value,
+  };
+  const success = await authStore.loginUser(user);
+  if (success) {
+    router.push({ name: "home" });
   }
 };
 
-watch(usernameInput, () => {
-  if (hasSubmitted.value) validateUsername();
-});
-watch(passwordInput, () => {
-  if (hasSubmitted.value) validatePassword();
+watch([usernameInput, passwordInput], () => {
+  if (hasSubmitted.value) validateForm();
 });
 </script>
 
