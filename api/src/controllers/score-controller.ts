@@ -5,11 +5,20 @@ import type {
   SubmitScoreOutcome,
   SubmitScoreResponse,
 } from "shared";
+import { scoreQuerySchema } from "src/types/score.js";
 import { Gamemode, Map } from "../models/score-metadata.js";
 import Score from "../models/score.js";
-import { ForbiddenError, NotFoundError } from "../utils/api-errors.js";
-import { buildFilter, validateExists } from "../utils/score-utils.js";
-import { getUserByName, userWithIdExists } from "../utils/user-utils.js";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "../utils/api-errors.js";
+import {
+  buildScoreFilter,
+  parseScoreZodIssues,
+  validateExists,
+} from "../utils/score-utils.js";
+import { userWithIdExists } from "../utils/user-utils.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {
@@ -60,29 +69,18 @@ class ScoreController {
   }
 
   async queryScores(req: Request, res: Response) {
-    // fck typescript...:DDDDDDDDDDDDDDDDDD
-    const filter = buildFilter(req.query as Record<string, any>, [
-      "gamemode",
-      "map",
-      "username",
-    ]) as Record<string, any>;
-    await validateExists(Gamemode, "Gamemode", filter.gamemode as string);
-    await validateExists(Map, "Map", filter.map as string);
-
-    // get user's objectId for filter
-    if (filter.username) {
-      const user = await getUserByName(filter.username);
-      filter.user = user._id.toString();
-      delete filter.username;
+    const paramsResult = scoreQuerySchema.safeParse(req.query);
+    if (!paramsResult.success) {
+      const message = parseScoreZodIssues(paramsResult.error.issues);
+      throw new BadRequestError(message);
     }
-
+    const filter = await buildScoreFilter(paramsResult.data);
     let sortDirection: string | undefined;
     if (filter.gamemode && filter.map) {
       sortDirection = filter.gamemode === "time-trial" ? "score" : "-score";
-    } else if (filter.user) {
+    } else {
       sortDirection = "-timestamp";
     }
-
     const scores = await Score.find(filter)
       .sort(sortDirection)
       .populate("user", "username");
@@ -106,5 +104,4 @@ class ScoreController {
     return res.status(204).end();
   }
 }
-
 export default new ScoreController();

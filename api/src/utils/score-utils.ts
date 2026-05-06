@@ -1,25 +1,45 @@
+import { type ScoreQueryParams } from "src/types/score.js";
+import type { ZodError } from "zod";
+import { Gamemode, Map } from "../models/score-metadata.js";
 import { NotFoundError } from "./api-errors.js";
+import { getUserByName } from "./user-utils.js";
 
-/**
- * returns filtered object containing only allowed keys from the query (w/ non-empty values).
- * @param query - request query parameters object
- * @param allowedKeys - array of keys to include in result
- */
-export const buildFilter = <T extends string>(
-  query: Partial<Record<T, string>>,
-  allowedKeys: readonly T[] = [],
-): Partial<Record<T, string>> => {
-  const filter: Partial<Record<T, string>> = {};
-
-  for (const key of allowedKeys) {
-    const value = query[key];
-    if (value !== undefined && value !== "") {
-      filter[key] = value;
+export function parseScoreZodIssues(issues: ZodError["issues"]): string {
+  const messages = issues.map((issue) => {
+    if (issue.path[0] === "username") {
+      return "username must be a string and at least 4 characters";
     }
+    if (issue.path[0] === "gamemode") {
+      return "gamemode must be a non-empty string";
+    }
+    if (issue.path[0] === "map") {
+      return "map must be a non-empty string";
+    }
+    return issue.message;
+  });
+  return messages.join("; ");
+}
+
+export async function buildScoreFilter(
+  params: ScoreQueryParams,
+): Promise<Record<string, string>> {
+  const filter: Record<string, string> = {};
+
+  if (params.gamemode) {
+    await validateExists(Gamemode, "Gamemode", params.gamemode);
+    filter.gamemode = params.gamemode;
+  }
+  if (params.map) {
+    await validateExists(Map, "Map", params.map);
+    filter.map = params.map;
+  }
+  if (params.username) {
+    const user = await getUserByName(params.username);
+    filter.user = user._id.toString();
   }
 
   return filter;
-};
+}
 
 export const validateExists = async (
   Model: any,
