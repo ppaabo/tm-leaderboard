@@ -69,12 +69,7 @@ class ScoreController {
   }
 
   async queryScores(req: Request, res: Response) {
-    const paramsResult = scoreQuerySchema.safeParse(req.query);
-    if (!paramsResult.success) {
-      const message = parseScoreZodIssues(paramsResult.error.issues);
-      throw new BadRequestError(message);
-    }
-    const filter = await buildScoreFilter(paramsResult.data);
+    const filter = await buildScoreFilter(req.query);
     let sortDirection: string | undefined;
     if (filter.gamemode && filter.map) {
       sortDirection = filter.gamemode === "time-trial" ? "score" : "-score";

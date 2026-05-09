@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "@/utils/api-errors.js";
 import { ZodType } from "zod";
+import { scoreQuerySchema } from "@/schemas";
+import { parseScoreZodIssues } from "@/utils/score-utils.js";
 
 // Check if request body exists
 function requireBody(req: Request, res: Response, next: NextFunction) {
@@ -37,4 +39,17 @@ export function validateRouteParams(schema: ZodType) {
     }
     next();
   };
+}
+
+export function validateQueryScoresParams(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const result = scoreQuerySchema.safeParse(req.query);
+  if (!result.success) {
+    const message = parseScoreZodIssues(result.error.issues);
+    throw new BadRequestError(message);
+  }
+  next();
 }

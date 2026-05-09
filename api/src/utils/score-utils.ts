@@ -7,7 +7,7 @@ import { getUserByName } from "./user-utils.js";
 export function parseScoreZodIssues(issues: ZodError["issues"]): string {
   const messages = issues.map((issue) => {
     if (issue.path[0] === "username") {
-      return "username must be a string and at least 4 characters";
+      return "username must be a string of length 4-32";
     }
     if (issue.path[0] === "gamemode") {
       return "gamemode must be a non-empty string";

@@ -3,6 +3,7 @@ import { requireAuth } from "@/middleware/auth-middleware.js";
 import {
   validateBodyWithSchema,
   validateRouteParams,
+  validateQueryScoresParams,
 } from "@/middleware/validate-request.js";
 import { ScorePayloadSchema, zObjectId } from "@/schemas";
 import { Router } from "express";
@@ -10,7 +11,7 @@ import { z } from "zod";
 
 const router = Router();
 
-router.get("/", scoreController.queryScores);
+router.get("/", validateQueryScoresParams, scoreController.queryScores);
 router.post(
   "/",
   requireAuth,
