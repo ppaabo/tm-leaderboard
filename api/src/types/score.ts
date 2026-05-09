@@ -1,5 +1,6 @@
 import { Document, Types } from "mongoose";
 import { z } from "zod";
+import { scoreQuerySchema } from "@/schemas";
 
 export interface IScore extends Document {
   user: Types.ObjectId;
@@ -18,17 +19,5 @@ export interface IMap extends Document {
   id: string;
   name: string;
 }
-
-export const ScorePayloadSchema = z.strictObject({
-  gamemode: z.string(),
-  map: z.string().min(1),
-  score: z.number().min(1),
-});
-
-export const scoreQuerySchema = z.strictObject({
-  gamemode: z.string().min(1).optional(),
-  map: z.string().min(1).optional(),
-  username: z.string().min(4).optional(),
-});
 
 export type ScoreQueryParams = z.infer<typeof scoreQuerySchema>;

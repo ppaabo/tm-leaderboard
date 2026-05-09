@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import User from "../models/user.js";
+import User from "@/models/user.js";
 import {
   ApiError,
   BadRequestError,
   UnauthorizedError,
-} from "../utils/api-errors.js";
-import { validateUserRegistration } from "../utils/user-utils.js";
+} from "@/utils/api-errors.js";
+import { validateUserRegistration } from "@/utils/user-utils.js";
 import bcrypt from "bcrypt";
 import type { AuthUser } from "shared";
 
@@ -38,7 +38,7 @@ class AuthController {
       throw new ApiError(
         "Error creating user",
         500,
-        error instanceof Error ? error : undefined
+        error instanceof Error ? error : undefined,
       );
     }
   }

@@ -1,6 +1,6 @@
-import { type ScoreQueryParams } from "src/types/score.js";
+import type { ScoreQueryParams } from "@/types";
 import type { ZodError } from "zod";
-import { Gamemode, Map } from "../models/score-metadata.js";
+import { Gamemode, Map } from "@/models/score-metadata.js";
 import { NotFoundError } from "./api-errors.js";
 import { getUserByName } from "./user-utils.js";
 

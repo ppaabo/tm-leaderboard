@@ -1,8 +1,8 @@
+import scoreController from "@/controllers/score-controller.js";
+import { requireAuth } from "@/middleware/auth-middleware.js";
+import { validateBodyWithSchema } from "@/middleware/validate-body.js";
+import { ScorePayloadSchema } from "@/schemas";
 import { Router } from "express";
-import { ScorePayloadSchema } from "src/types/score.js";
-import scoreController from "../controllers/score-controller.js";
-import { requireAuth } from "../middleware/auth-middleware.js";
-import { validateBodyWithSchema } from "../middleware/validate-body.js";
 
 const router = Router();
 

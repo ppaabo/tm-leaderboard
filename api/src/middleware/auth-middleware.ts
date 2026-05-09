@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { UnauthorizedError, ForbiddenError } from "../utils/api-errors.js";
-import { IUser } from "../types/user.js";
+import { UnauthorizedError, ForbiddenError } from "@/utils/api-errors.js";
+import { IUser } from "@/types";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.isAuthenticated()) {

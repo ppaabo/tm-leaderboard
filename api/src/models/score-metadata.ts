@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import type { IGamemode, IMap } from "../types/score.js";
+import type { IGamemode, IMap } from "@/types";
 
 const gamemodeSchema = new Schema<IGamemode>({
   id: { type: String, required: true, unique: true },

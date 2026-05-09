@@ -1,7 +1,7 @@
+import Score from "@/models/score.js";
+import User from "@/models/user.js";
+import { getUserByName, userWithIdExists } from "@/utils/user-utils.js";
 import { Request, Response } from "express";
-import Score from "../models/score.js";
-import User from "../models/user.js";
-import { getUserByName, userWithIdExists } from "../utils/user-utils.js";
 
 class UserController {
   async getUserProfile(req: Request, res: Response) {

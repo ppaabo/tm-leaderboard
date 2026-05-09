@@ -1,3 +1,17 @@
+import { Gamemode, Map } from "@/models/score-metadata.js";
+import Score from "@/models/score.js";
+import { scoreQuerySchema } from "@/schemas";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "@/utils/api-errors.js";
+import {
+  buildScoreFilter,
+  parseScoreZodIssues,
+  validateExists,
+} from "@/utils/score-utils.js";
+import { userWithIdExists } from "@/utils/user-utils.js";
 import { Request, Response } from "express";
 import type {
   ScorePayload,
@@ -5,20 +19,6 @@ import type {
   SubmitScoreOutcome,
   SubmitScoreResponse,
 } from "shared";
-import { scoreQuerySchema } from "src/types/score.js";
-import { Gamemode, Map } from "../models/score-metadata.js";
-import Score from "../models/score.js";
-import {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-} from "../utils/api-errors.js";
-import {
-  buildScoreFilter,
-  parseScoreZodIssues,
-  validateExists,
-} from "../utils/score-utils.js";
-import { userWithIdExists } from "../utils/user-utils.js";
 
 class ScoreController {
   async addScore(req: Request, res: Response) {

@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import type { IUser } from "@/types";
+import mongoose, { Schema } from "mongoose";
 import Score from "./score.js";
-import type { IUser } from "../types/index.js";
 
 const userSchema: Schema<IUser> = new Schema({
   username: {
@@ -33,7 +33,7 @@ userSchema.pre(
     const userId = this.getFilter()._id;
     await Score.deleteMany({ user: userId });
     next();
-  }
+  },
 );
 userSchema.pre(
   "findOneAndDelete",
@@ -42,7 +42,7 @@ userSchema.pre(
     const userId = this.getFilter()._id;
     await Score.deleteMany({ user: userId });
     next();
-  }
+  },
 );
 
 const User = mongoose.model<IUser>("User", userSchema);

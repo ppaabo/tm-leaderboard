@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-import type { IScore } from "../types/index.js";
+import type { IScore } from "@/types";
+import mongoose, { Schema } from "mongoose";
 
 const scoreSchema: Schema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError } from "../utils/api-errors.js";
+import { BadRequestError } from "@/utils/api-errors.js";
 import { ZodType } from "zod";
 
 // Check if request body exists

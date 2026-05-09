@@ -1,7 +1,7 @@
-import { Strategy as LocalStrategy } from "passport-local";
+import User from "@/models/user.js";
+import { UnauthorizedError } from "@/utils/api-errors.js";
 import bcrypt from "bcrypt";
-import User from "../models/user.js";
-import { UnauthorizedError } from "../utils/api-errors.js";
+import { Strategy as LocalStrategy } from "passport-local";
 
 export default function configurePassport(passport: any) {
   passport.use(
@@ -9,7 +9,7 @@ export default function configurePassport(passport: any) {
       async (
         username: string,
         password: string,
-        done: (error: any, user?: any, info?: any) => void
+        done: (error: any, user?: any, info?: any) => void,
       ) => {
         try {
           const user = await User.findOne({
@@ -23,8 +23,8 @@ export default function configurePassport(passport: any) {
         } catch (error) {
           return done(error);
         }
-      }
-    )
+      },
+    ),
   );
 
   passport.serializeUser((user: any, done: (error: any, id?: any) => void) => {
@@ -39,6 +39,6 @@ export default function configurePassport(passport: any) {
       } catch (error) {
         done(error);
       }
-    }
+    },
   );
 }
