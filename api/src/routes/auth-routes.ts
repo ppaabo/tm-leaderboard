@@ -3,7 +3,7 @@ import { Router } from "express";
 import passport from "passport";
 import authController from "@/controllers/auth-controller.js";
 import { requireAuth } from "@/middleware/auth-middleware.js";
-import { validateBodyWithSchema } from "@/middleware/validate-body.js";
+import { validateBodyWithSchema } from "@/middleware/validate-request.js";
 
 const router = Router();
 router.post(
