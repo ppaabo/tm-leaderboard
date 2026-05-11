@@ -14,11 +14,11 @@ onMounted(() => {
 
 const isGamemodeRoute = computed(() => !props.gamemode);
 const items = computed(() =>
-  isGamemodeRoute.value ? store.gamemodes : store.maps
+  isGamemodeRoute.value ? store.gamemodes : store.maps,
 );
 
 const title = computed(() =>
-  isGamemodeRoute.value ? "Select Gamemode" : "Select Map"
+  isGamemodeRoute.value ? "Select Gamemode" : "Select Map",
 );
 
 function handleSelect(item: { id: string; name: string }) {

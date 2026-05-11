@@ -1,14 +1,14 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
-import LeaderboardView from "@/components/leaderboard/LeaderboardView.vue";
-import CategoryListView from "@/components/leaderboard/CategoryListView.vue";
 import HomeView from "@/components/HomeView.vue";
+import CategoryListView from "@/components/leaderboard/CategoryListView.vue";
+import LeaderboardView from "@/components/leaderboard/LeaderboardView.vue";
 import LoginView from "@/components/user/LoginView.vue";
 import SignUpView from "@/components/user/SignUpView.vue";
-import SubmitScoreView from "./components/leaderboard/SubmitScoreView.vue";
-import UserProfileView from "./components/user/UserProfileView.vue";
-import UserSettingsView from "./components/user/UserSettingsView.vue";
-import { useAuthStore } from "./stores/auth-store";
+import SubmitScoreView from "@/components/leaderboard/SubmitScoreView.vue";
+import UserProfileView from "@/components/user/UserProfileView.vue";
+import UserSettingsView from "@/components/user/UserSettingsView.vue";
+import { useAuthStore } from "@/stores/auth-store";
 
 const routes = [
   { path: "/", name: "home", component: HomeView },
