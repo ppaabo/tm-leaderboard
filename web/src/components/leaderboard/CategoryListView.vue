@@ -21,6 +21,10 @@ const title = computed(() =>
   isGamemodeRoute.value ? "Select Gamemode" : "Select Map",
 );
 
+const layout = computed(() =>
+  isGamemodeRoute.value ? "selection-row" : "selection-grid",
+);
+
 function handleSelect(item: { id: string; name: string }) {
   if (isGamemodeRoute.value) {
     router.push(`/leaderboard/${item.id}`);
@@ -32,5 +36,5 @@ function handleSelect(item: { id: string; name: string }) {
 
 <template>
   <h2>{{ title }}</h2>
-  <CategoryList :items="items" @select="handleSelect" />
+  <CategoryList :items="items" :layout="layout" @select="handleSelect" />
 </template>
