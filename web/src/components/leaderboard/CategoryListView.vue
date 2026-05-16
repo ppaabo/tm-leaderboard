@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useCategoryStore } from "@/stores/category-store";
-import { onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
 import CategoryList from "@/components/leaderboard/CategoryList.vue";
+import { useCategoryStore } from "@/stores/category-store";
+import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const store = useCategoryStore();
 const props = defineProps<{ gamemode?: string }>();
@@ -13,6 +13,7 @@ onMounted(() => {
 });
 
 const isGamemodeRoute = computed(() => !props.gamemode);
+
 const items = computed(() =>
   isGamemodeRoute.value ? store.gamemodes : store.maps,
 );
@@ -21,20 +22,16 @@ const title = computed(() =>
   isGamemodeRoute.value ? "Select Gamemode" : "Select Map",
 );
 
-const layout = computed(() =>
-  isGamemodeRoute.value ? "selection-row" : "selection-grid",
-);
-
-function handleSelect(item: { id: string; name: string }) {
+const handleSelect = (item: { id: string; name: string }) => {
   if (isGamemodeRoute.value) {
     router.push(`/leaderboard/${item.id}`);
   } else {
     router.push(`/leaderboard/${props.gamemode}/${item.id}`);
   }
-}
+};
 </script>
 
 <template>
-  <h2>{{ title }}</h2>
-  <CategoryList :items="items" :layout="layout" @select="handleSelect" />
+  <h3>{{ title }}</h3>
+  <CategoryList :items="items" @select="handleSelect" />
 </template>
