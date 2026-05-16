@@ -57,3 +57,14 @@ const handleLogout = async () => {
     </ul>
   </nav>
 </template>
+
+<style scoped>
+nav {
+  border-bottom: 2px solid var(--pico-muted-border-color);
+}
+
+/* fix for firefox (https://github.com/picocss/pico/issues/701#issuecomment-3367167118) */
+nav li details.dropdown {
+  display: inline-block;
+}
+</style>
