@@ -36,14 +36,15 @@ defineEmits<{
   cursor: pointer;
   overflow: hidden;
   border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   transition:
     box-shadow 0.2s,
     transform 0.2s;
 }
 
 .selection-card:hover {
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
   transform: scale(1.02);
+  box-shadow: rgba(0, 0, 0, 0.38) 0px 10px 24px;
   transition:
     box-shadow 0.2s,
     transform 0.2s;
