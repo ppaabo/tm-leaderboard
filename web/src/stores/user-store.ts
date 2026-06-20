@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useNotification } from "@kyvg/vue3-notification";
 import { useAuthStore } from "@/stores/auth-store";
+import type { UserList } from "shared";
 
 export const useUserStore = defineStore("user", () => {
   const { notify } = useNotification();
@@ -29,5 +30,28 @@ export const useUserStore = defineStore("user", () => {
       return false;
     }
   }
-  return { deleteOwnAccount };
+
+  async function getAllUsers(): Promise<UserList | null> {
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/users`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const data: UserList = (await response.json()).data;
+      return data;
+    } catch (error) {
+      console.error("getAllusers: ", error);
+      notify({
+        type: "error",
+        title: "Error",
+        text: "Fetching users failed!",
+      });
+      return null;
+    }
+  }
+  return {
+    deleteOwnAccount,
+    getAllUsers,
+  };
 });
