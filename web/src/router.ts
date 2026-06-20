@@ -8,6 +8,8 @@ import SignUpView from "@/components/user/SignUpView.vue";
 import SubmitScoreView from "@/components/leaderboard/SubmitScoreView.vue";
 import UserProfileView from "@/components/user/UserProfileView.vue";
 import UserSettingsView from "@/components/user/UserSettingsView.vue";
+import UserList from "@/components/admin/UserList.vue";
+
 import { useAuthStore } from "@/stores/auth-store";
 
 const routes = [
@@ -51,6 +53,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/users",
+    name: "users",
+    component: UserList,
+    meta: { requiresAuth: true, requiresRole: ["admin"] },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: { name: "home" },
   },
@@ -69,6 +77,15 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
     return { name: "home" };
+  }
+
+  const requiredRoles = to.meta!.requiresRole as string[];
+
+  if (requiredRoles && authStore.currentUser) {
+    const userRole = authStore.currentUser.accountType;
+    if (!userRole || !requiredRoles.includes(userRole)) {
+      return { name: "home" };
+    }
   }
 });
 
