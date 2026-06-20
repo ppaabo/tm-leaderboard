@@ -8,15 +8,80 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Manrope:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-#app {
-  text-align: center;
-}
-
 :root {
   --pico-font-family-sans-serif:
     "Lato", system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Helvetica,
     Arial, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+#app {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+main {
+  flex: 1;
+}
+
+.vue-notification-group {
+  padding-top: 1rem;
+}
+
+.custom-notification {
+  margin: 0 5px 5px;
+  padding: 10px;
+  font-size: 12px;
+  color: #ffffff;
+  border-radius: 0.2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid;
+  position: relative;
+  cursor: pointer;
+
+  .notification-title {
+    font-weight: bold;
+    padding-right: 20px;
+  }
+
+  &.success {
+    background: var(--pico-color-jade-700);
+    border-left-color: var(--pico-color-jade-500);
+  }
+
+  &.error {
+    background: var(--pico-color-red-700);
+    border-left-color: var(--pico-color-red-500);
+  }
+  &.info {
+    background: var(--pico-color-cyan-700);
+    border-left-color: var(--pico-color-cyan-500);
+  }
+
+  /* close button */
+  &::after {
+    content: "×";
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .delete-btn {

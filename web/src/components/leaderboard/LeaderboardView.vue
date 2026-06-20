@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/category-store";
 import { useScoreStore } from "@/stores/score-store";
-import { useRouter } from "vue-router";
-import { computed, onMounted, ref } from "vue";
 import type { LeaderboardEntryData, LeaderboardEntryDisplay } from "@/types";
 import { formatTimeTrialScore } from "@/utils/score-utils";
-import LeaderboardTable from "./LeaderboardTable.vue";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import LoadingIndicator from "../LoadingIndicator.vue";
+import LeaderboardTable from "./LeaderboardTable.vue";
 
 const categoryStore = useCategoryStore();
 const scoreStore = useScoreStore();
@@ -57,7 +57,7 @@ const handleClick = (username: string) => {
   </template>
   <template v-else>
     <section>
-      <header>
+      <header class="leaderboard-header">
         <p>
           <strong>Gamemode:</strong> {{ gamemodeObj?.name || props.gamemode }}
         </p>
@@ -77,13 +77,14 @@ const handleClick = (username: string) => {
 </template>
 
 <style scoped>
-header {
+.leaderboard-header {
   display: flex;
   justify-content: center;
   gap: 1rem;
   padding: 0.5rem;
   border-bottom: 2px solid var(--pico-secondary-background);
 }
+
 .empty-message {
   text-align: center;
   font-style: italic;
