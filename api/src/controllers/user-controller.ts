@@ -20,21 +20,6 @@ class UserController {
     res.status(204).end();
   }
 
-  // Protected operations
-  async getAllUsers(req: Request, res: Response) {
-    // const users = await User.find().select({ email: 0 });
-    const users = await User.find();
-    res.json({ status: "success", data: users });
-  }
-
-  async deleteUserAccount(req: Request, res: Response) {
-    const userId = req.params.id;
-    await userWithIdExists(userId);
-    const deletedUser = await User.findOneAndDelete({ _id: userId });
-    console.log("Deleted user: ", deletedUser);
-    res.status(204).end();
-  }
-
   async getUserScoresWithPlacement(req: Request, res: Response) {
     const username = req.params.username;
     const user = await getUserByName(username);
@@ -68,6 +53,21 @@ class UserController {
       }),
     );
     res.json({ status: "success", data: scoresWithPlacements });
+  }
+
+  // Protected operations
+  async getAllUsers(req: Request, res: Response) {
+    // const users = await User.find().select({ email: 0 });
+    const users = await User.find();
+    res.json({ status: "success", data: users });
+  }
+
+  async deleteUserAccount(req: Request, res: Response) {
+    const userId = req.params.id;
+    await userWithIdExists(userId);
+    const deletedUser = await User.findOneAndDelete({ _id: userId });
+    console.log("Deleted user: ", deletedUser);
+    res.status(204).end();
   }
 }
 
