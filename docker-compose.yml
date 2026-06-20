@@ -2,51 +2,47 @@ services:
   api:
     container_name: leaderboard-api
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./api/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - mongodb
     env_file:
       - ./api/.env
-    volumes:
-      - ./shared:/shared
     develop:
       watch:
         - action: sync
           path: ./api/src
-          target: /app/src
+          target: /app/api/src
           initial_sync: true
         - action: rebuild
           path: ./api/package.json
   web:
     container_name: leaderboard-client
     build:
-      context: ./web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./web/Dockerfile
     ports:
       - "5173:5173"
     env_file:
       - ./web/.env
-    volumes:
-      - ./shared:/shared
     develop:
       watch:
         - action: sync
           path: ./web/src
-          target: /app/src
+          target: /app/web/src
           ignore:
             - stores/
             - router.ts
           initial_sync: true
         - action: sync+restart
           path: ./web/src/router.ts
-          target: ./app/src/router.ts
+          target: ./app/web/src/router.ts
           initial_sync: true
         - action: sync+restart
           path: ./web/src/stores
-          target: /app/src/stores
+          target: /app/web/src/stores
           initial_sync: true
         - action: rebuild
           path: ./web/package.json
