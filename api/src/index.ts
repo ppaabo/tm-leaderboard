@@ -3,6 +3,7 @@ import session from "express-session";
 import passport from "passport";
 import cors from "cors";
 import dotenv from "dotenv";
+import MongoStore from "connect-mongo";
 
 import initPassport from "./auth/passport-config.js";
 import { connectDB } from "./db/connect-db.js";
@@ -21,9 +22,18 @@ app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "session_secret",
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL || "mongodb://mongodb:27017/leaderboard",
+      ttl: 14 * 24 * 60 * 60, // 14 days
+      collectionName: "sessions",
+    }),
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false },
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+    },
   }),
 );
 
@@ -57,7 +67,7 @@ if (process.env.NODE_ENV !== "test") {
     try {
       await connectDB();
       app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
+        console.log(`Server is running! on http://localhost:${PORT}`);
       });
       console.log(process.env.SESSION_SECRET);
     } catch (err) {
