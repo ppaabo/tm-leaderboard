@@ -15,3 +15,5 @@ export type AuthUser = {
   email: string;
   accountType: "user" | "admin";
 };
+
+export type UserList = AuthUser[];

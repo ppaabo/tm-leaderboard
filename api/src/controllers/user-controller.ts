@@ -2,6 +2,7 @@ import Score from "@/models/score.js";
 import User from "@/models/user.js";
 import { getUserByName, userWithIdExists } from "@/utils/user-utils.js";
 import { Request, Response } from "express";
+import type { UserList } from "shared";
 
 class UserController {
   async getUserProfile(req: Request, res: Response) {
@@ -58,8 +59,14 @@ class UserController {
   // Protected operations
   async getAllUsers(req: Request, res: Response) {
     // const users = await User.find().select({ email: 0 });
-    const users = await User.find();
-    res.json({ status: "success", data: users });
+    const users = await User.find({}, { password: 0, __v: 0 });
+    const userList: UserList = users.map((user) => ({
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      accountType: user.accountType,
+    }));
+    res.json({ status: "success", data: userList });
   }
 
   async deleteUserAccount(req: Request, res: Response) {
