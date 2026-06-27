@@ -77,7 +77,7 @@ const getPlacementText = (placement: number): string => {
           <td>{{ getMapName(entry.map) }}</td>
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
-          <td v-if="canDelete">
+          <td title="Delete score" v-if="canDelete">
             <button class="delete-btn" @click.stop="$emit('delete', entry._id)">
               Delete
             </button>
