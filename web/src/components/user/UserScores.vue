@@ -92,15 +92,4 @@ const getPlacementText = (placement: number): string => {
 .gamemode-section {
   margin-bottom: 2rem;
 }
-
-.clickable-row {
-  cursor: pointer;
-}
-
-td .delete-btn {
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-  font-size: 0.95em;
-  line-height: 1;
-}
 </style>

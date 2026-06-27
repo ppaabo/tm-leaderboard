@@ -43,9 +43,3 @@ const getPlacementText = (index: number): string => {
     </tbody>
   </table>
 </template>
-
-<style scoped>
-.clickable-row {
-  cursor: pointer;
-}
-</style>

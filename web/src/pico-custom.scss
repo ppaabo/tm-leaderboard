@@ -109,3 +109,14 @@ main {
       0 0 0 var(--pico-outline-width, 2px) var(--pico-color-red-350, #f17961);
   }
 }
+
+td .delete-btn {
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  font-size: 0.95em;
+  line-height: 1;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
