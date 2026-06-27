@@ -8,7 +8,7 @@ import SignUpView from "@/components/user/SignUpView.vue";
 import SubmitScoreView from "@/components/leaderboard/SubmitScoreView.vue";
 import UserProfileView from "@/components/user/UserProfileView.vue";
 import UserSettingsView from "@/components/user/UserSettingsView.vue";
-import UserList from "@/components/admin/UserList.vue";
+import UsersView from "@/components/admin/UsersView.vue";
 
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -55,7 +55,7 @@ const routes = [
   {
     path: "/users",
     name: "users",
-    component: UserList,
+    component: UsersView,
     meta: { requiresAuth: true, requiresRole: ["admin"] },
   },
   {
