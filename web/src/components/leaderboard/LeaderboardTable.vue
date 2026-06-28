@@ -3,7 +3,7 @@ import type { LeaderboardEntryDisplay } from "@/types";
 defineProps<{
   leaderboard: LeaderboardEntryDisplay[];
 }>();
-defineEmits<{
+const emit = defineEmits<{
   (e: "rowClick", username: string): void;
 }>();
 
@@ -29,7 +29,7 @@ const getPlacementText = (index: number): string => {
       <tr
         v-for="(entry, index) in leaderboard"
         :key="entry._id"
-        @click="$emit('rowClick', entry.user.username)"
+        @click="emit('rowClick', entry.user.username)"
         class="clickable-row"
         :title="`View ${entry.user.username}'s profile`"
       >

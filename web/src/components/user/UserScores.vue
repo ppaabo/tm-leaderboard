@@ -9,7 +9,7 @@ const props = defineProps<{
   canDelete: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "select", item: { gamemode: string; map: string }): void;
   (e: "delete", scoreId: string): void;
 }>();
@@ -67,7 +67,7 @@ const getPlacementText = (placement: number): string => {
         <tr
           v-for="entry in scores"
           :key="entry._id"
-          @click="$emit('select', { gamemode: entry.gamemode, map: entry.map })"
+          @click="emit('select', { gamemode: entry.gamemode, map: entry.map })"
           class="clickable-row"
           :title="`View leaderboard for: ${getGamemodeName(
             entry.gamemode,
@@ -78,7 +78,7 @@ const getPlacementText = (placement: number): string => {
           <td>{{ entry.score }}</td>
           <td>{{ new Date(entry.timestamp).toLocaleString() }}</td>
           <td title="Delete score" v-if="canDelete">
-            <button class="delete-btn" @click.stop="$emit('delete', entry._id)">
+            <button class="delete-btn" @click.stop="emit('delete', entry._id)">
               Delete
             </button>
           </td>

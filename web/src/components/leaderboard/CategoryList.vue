@@ -3,7 +3,7 @@ defineProps<{
   items: Array<{ id: string; name: string }>;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "select", item: { id: string; name: string }): void;
 }>();
 </script>
@@ -14,7 +14,7 @@ defineEmits<{
       class="selection-card"
       v-for="item in items"
       :key="item.id"
-      @click="$emit('select', item)"
+      @click="emit('select', item)"
     >
       <img :src="`/${item.id}.webp`" :alt="item.name" class="selection-image" />
       <span class="selection-text"> {{ item.name }}</span>

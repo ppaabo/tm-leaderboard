@@ -3,7 +3,7 @@ import type { UserList } from "shared";
 
 defineProps<{ users: UserList }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "select", username: string): void;
   (e: "delete", userId: string): void;
 }>();
@@ -24,7 +24,7 @@ defineEmits<{
       <tr
         v-for="user in users"
         :key="user.id"
-        @click="$emit('select', user.username)"
+        @click="emit('select', user.username)"
         class="clickable-row"
         :title="`View ${user.username}'s profile`"
       >
@@ -32,7 +32,7 @@ defineEmits<{
         <td>{{ user.email }}</td>
         <td>{{ user.accountType }}</td>
         <td title="Delete user">
-          <button class="delete-btn" @click.stop="$emit('delete', user.id)">
+          <button class="delete-btn" @click.stop="emit('delete', user.id)">
             Delete
           </button>
         </td>
