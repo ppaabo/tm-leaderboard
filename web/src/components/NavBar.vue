@@ -31,12 +31,19 @@ const handleLogout = async () => {
       <li v-if="!authStore.isAuthenticated">
         <router-link :to="{ name: 'login' }">Login</router-link>
       </li>
-      <li v-else>
-        <NavBarDropdown
-          :username="authStore.currentUser?.username"
-          @logout="handleLogout"
-        />
-      </li>
+      <template v-else>
+        <li v-if="authStore.currentUser?.accountType === 'admin'">
+          <router-link class="contrast" :to="{ name: 'users' }"
+            >Users</router-link
+          >
+        </li>
+        <li>
+          <NavBarDropdown
+            :username="authStore.currentUser?.username"
+            @logout="handleLogout"
+          />
+        </li>
+      </template>
     </ul>
   </nav>
 </template>
