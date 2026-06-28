@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import UserTable from "@/components/admin/UserTable.vue";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useUserStore } from "@/stores/user-store";
 import { DeleteUserAccountStatus } from "@/types";
 import type { UserList } from "shared";
