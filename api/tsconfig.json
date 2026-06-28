@@ -12,10 +12,9 @@
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "paths": {
       "shared": ["../shared/dist/*"],
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"],
       "@/types": ["./src/types/index.ts"],
       "@/schemas": ["./src/schemas/index.ts"]
     }
