@@ -29,3 +29,13 @@ export const logInSchema = z.strictObject({
 });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
+
+export const DeleteUserAccountStatus = {
+  Deleted: "deleted",
+  NotFound: "notFound",
+  Forbidden: "forbidden",
+  Error: "error",
+} as const;
+
+export type DeleteUserAccountStatus =
+  (typeof DeleteUserAccountStatus)[keyof typeof DeleteUserAccountStatus];
