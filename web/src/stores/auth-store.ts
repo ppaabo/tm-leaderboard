@@ -5,6 +5,7 @@ import { useNotification } from "@kyvg/vue3-notification";
 
 export const useAuthStore = defineStore("auth", () => {
   const currentUser = ref<AuthUser | null>(null);
+  let refreshPromise: Promise<void> | null = null;
   const { notify } = useNotification();
 
   async function loginUser(userObj: LoginPayload): Promise<boolean> {
@@ -106,22 +107,36 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function refreshSession() {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (response.ok) {
+    // promise to avoid multiple concurrent calls during navigation
+    if (refreshPromise) return refreshPromise;
+    refreshPromise = (async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/me`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        if (!response.ok) {
+          if (response.status === 401) {
+            clearUser();
+            return;
+          }
+          clearUser();
+          console.warn("refreshSession failed:", response.status);
+          return;
+        }
         const data: AuthUser = (await response.json()).data;
         setUser(data);
-      } else {
+      } catch (error) {
         clearUser();
-        console.log("Not logged in");
+        console.error("refreshSession network error:", error);
       }
-    } catch (error) {
-      clearUser();
-      console.error("getMe", error);
-    }
+    })().finally(() => {
+      refreshPromise = null;
+    });
+    return refreshPromise;
   }
 
   const isAuthenticated = computed(() => !!currentUser.value);
