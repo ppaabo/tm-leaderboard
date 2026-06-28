@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import NavBarDropdown from "@/components/NavBarDropdown.vue";
 import { useAuthStore } from "@/stores/auth-store";
 import { useRouter } from "vue-router";
 
@@ -31,28 +32,10 @@ const handleLogout = async () => {
         <router-link :to="{ name: 'login' }">Login</router-link>
       </li>
       <li v-else>
-        <details class="dropdown">
-          <summary role="button" class="outline">
-            {{ authStore.currentUser?.username }}
-          </summary>
-          <ul>
-            <li>
-              <router-link
-                :to="{
-                  name: 'user',
-                  params: { username: authStore.currentUser?.username },
-                }"
-                >Profile</router-link
-              >
-            </li>
-            <li>
-              <router-link :to="{ name: 'settings' }">Settings</router-link>
-            </li>
-            <li>
-              <a href="#" @click.prevent="handleLogout">Logout</a>
-            </li>
-          </ul>
-        </details>
+        <NavBarDropdown
+          :username="authStore.currentUser?.username"
+          @logout="handleLogout"
+        />
       </li>
     </ul>
   </nav>
